@@ -1,59 +1,30 @@
 /* 
  * author: Yitao Li
  * 
- * note: this code will probably only work with XML data from http://api.openstreetmap.org/api/0.6 
+ * note: this will probably only work with XML data from http://api.openstreetmap.org/api/0.6 
+ *
+ * <!-- the current code does not parse XML comment like this --> 
  *  
  */
 
-//#include <fstream>
-#include <iostream>
-#include <string.h>
-
-#define VERBOSE 1
-#define BUFFER_SIZE 4096    //assuming each tag has size less than 4k
-
-
+#include "osm_xml.h"
 
 int main(int argc, char *argv[]){
 	if (argc != 2){
-		std::cout<<"Usage: "<<argv[0]<<" <OSM ML data>\n";
-		return 0;
+		printf("Usage: %s <OSM ML data>\n", argv[0]);
+		exit(0);
 	}
-	std::ifstream f(argv[1]);	
+	char buffer[DEFAULT_BUFFER_SIZE + 1];
+	char tag_name[MAX_TL + 1];
+	size_t offset = 0;
+	buffer[DEFAULT_BUFFER_SIZE] = '\0';
+	tag_name[MAX_TL] = '\0';
+	std::ifstream f(argv[1]);
 	if (!f.is_open()){
-		std::cerr<<"Error opening input file\n";
-		return -1;
+		perror("Error opening input file\n");
+		exit(1);
 	}
-	char buffer[BUFFER_SIZE];
-	buffer[BUFFER_SIZE - 1] = '\0'; 
-	unsigned int num_node;
-	/* read XML version and encoding info */
-	/*
-	f.getline(buffer, BUFFER_SIZE - 1, '>');
-	if (VERBOSE){
-		buffer[strlen(buffer) - 1] = '\0';    //omit the trailing '?' in output
-		std::cout<<"reading XML version info: "<<(buffer + 2)<<"\n\n";
-	}
-	f.getline(buffer, BUFFER_SIZE - 1, '>');
-	if (VERBOSE){
-		std::cout<<"reading OSM version info: "<<(buffer + 2)<<"\n\n";
-	}
-	f.getline(buffer, BUFFER_SIZE - 1, '>');
-	if (VERBOSE){
-		buffer[strlen(buffer) - 1] = '\0';    //omit the trailing '/' in output 
-		std::cout<<"reading bounding box coordinates: "<<(buffer + 2)<<"\n\n";
-	}
-	for (num_node = 0, f.getline(buffer, BUFFER_SIZE - 1, '>'); !strncmp(buffer + 3, "node", 4); ++num_node, f.getline(buffer, BUFFER_SIZE - 1, '>')){
-		if (strncmp(buffer + strlen(buffer) - 1, "/", 2)){   //check if the current tag is closed
-			std::cout<<"unclosed tag\n";
-			for (f.getline(buffer, BUFFER_SIZE - 1, '>'); strncmp(buffer + 2, "</node", 6); f.getline(buffer, BUFFER_SIZE - 1, '>'));
-		}
-	}
-	if (VERBOSE){ std::cout<<num_node<<" node(s) found\n\n"; }
-	while (!f.eof()){
-		f.getline(buffer, BUFFER_SIZE - 1, '>');
-	}
-	f.close();
+	f.read(buffer, DEFAULT_BUFFER_SIZE);
+	read_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f);
 	return 0;
-	*/
 }
