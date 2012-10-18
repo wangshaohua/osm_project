@@ -1,3 +1,10 @@
+/* 
+ * some tests for the circular buffer code
+ *
+ * author: Yitao Li
+ *
+ */
+
 #include <stdio.h>
 #include "circ_buff.h"
 

@@ -7,8 +7,8 @@
 
 #include "osm_xml.h"
 
-void read_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t & offset, std::ifstream & f){ 
-	char c[2], *s, *e;
+void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t & offset, std::ifstream & f){ 
+	char c[2], attr[MAX_TL], *s, *e;
 	while (!f.eof()){
 		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
 			offset = 0;
@@ -24,8 +24,24 @@ void read_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_
 					perror("Error: XML tag name contains too many characters\n");
 					exit(-1);
 				}
-				circ_substr(tag_name, buffer, buffer_size, offset, offset, e - buffer);	
-				printf("tag_name == %s\n", tag_name);
+				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+				//if (VERBOSE){ printf("tag_name == %s\n", tag_name); }
+				if (!strcmp(tag_name, "node")){
+					update_buffer(buffer, buffer_size, e - buffer, offset, f);
+					s = e; 
+					e = circ_str_chr(buffer, buffer_size, offset, ' ');
+					if (!e || circ_len(buffer_size, offset, offset, e - buffer) > MAX_TL){
+						perror("Error: XML tag name contains too many characters\n");
+						exit(-1);
+					}
+					circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+					printf("attr == %s\n", attr);
+
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+				}else if (!strcmp(tag_name, "way")){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+				}
 				update_buffer(buffer, buffer_size, e - buffer, offset, f);
 			}
 			while (!(s = circ_str_chr(buffer, buffer_size, offset, '>'))){
@@ -36,4 +52,16 @@ void read_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_
 			s = circ_str_chr(buffer, buffer_size, offset, '<');
 		}
 	}
+}
+
+void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char *&s, char *&e, size_t & offset, std::ifstream & f){ 
+	update_buffer(buffer, buffer_size, e - buffer, offset, f);
+	s = e; 
+	e = circ_str_chr(buffer, buffer_size, offset, ' ');
+	if (!e || circ_len(buffer_size, offset, offset, e - buffer) > MAX_TL){
+		perror("Error: XML tag name contains too many characters\n");
+		exit(-1);
+	}
+	circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+	printf("attr == %s\n", attr);
 }
