@@ -16,7 +16,6 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 		}
 		while (s){
 			update_buffer(buffer, buffer_size, s - buffer, offset, f);
-			//circ_substr(c, buffer, buffer_size, offset, offset, (offset + 1) % buffer_size);	
 			circ_strncpy(c, buffer, buffer_size, offset, 0, 1);	
 			if (c[0] != '/'){
 				e = circ_str_chr(buffer, buffer_size, offset, ' ');
@@ -25,22 +24,12 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					exit(-1);
 				}
 				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-				//if (VERBOSE){ printf("tag_name == %s\n", tag_name); }
 				if (!strcmp(tag_name, "node")){
-					update_buffer(buffer, buffer_size, e - buffer, offset, f);
-					s = e; 
-					e = circ_str_chr(buffer, buffer_size, offset, ' ');
-					if (!e || circ_len(buffer_size, offset, offset, e - buffer) > MAX_TL){
-						perror("Error: XML tag name contains too many characters\n");
-						exit(-1);
-					}
-					circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-					printf("attr == %s\n", attr);
-
-					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
-					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lat
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lon
 				}else if (!strcmp(tag_name, "way")){
-					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //way id
 				}
 				update_buffer(buffer, buffer_size, e - buffer, offset, f);
 			}

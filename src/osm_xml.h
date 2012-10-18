@@ -10,7 +10,7 @@
 
 #define VERBOSE 1
 #define DEFAULT_BUFFER_SIZE 4096   //4k: the default filesystem block size on most *NIX systems
-#define MAX_TL 32   //assuming no XML element name contains more than 32 characters 
+#define MAX_TL 256   //assuming no XML element name contains more than 32 characters 
 
 #include <stdio.h>
 #include <stdlib.h>
