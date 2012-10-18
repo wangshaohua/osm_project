@@ -1,5 +1,37 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
 This is the official repository for the Open Street Map project of course TCSS.590.B, edition Fall 2012.
 
 Detailed objectives are available at http://depts.washington.edu/giscup/roadnetwork
 
 Happy hacking!!
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+Comment: "Trust, but Verify." --Ronald Reagan
+
+iQQcBAEBCgAGBQJQfyM/AAoJECcCrtYQ3Dn1j4Mf/3asDipCf7a7Mzu+M06my03w
+xz+/ii0eu5Zg0XDoqRcsuWtdIrd9Kl2+ZVVvG848ZbaVrJHVpqGV8/D9FviEt7Yf
+2LU1NoP/VywALKCoriHsgj5WX76gSsOBlhPKMzd5oXL5rLmcxXcmsKqVaIl0utkL
+9AOz0qEg8sZkLW5BNDFpy53g91T9HQ+4MfUpwT1rokbK+BgfABTxLD15HHhacTk9
+yaIqiwkshHEWglErqSaChKL5KNlSo6AXqM4xQzZjI/M5zILK0YyTA/lVveyDn/Ve
+qJy+OXKNwC6lwNypQm0dhJwS0jQirdVeoLJj71t2A4QweSoAa0tzQJXx5rr47oc6
+fLNFx6xTJrYyp11ifLaMfwOW/SN+RaH1pIgCCgsiEOL4ywVPbMGDJzSw1aruGeGp
+0p/xb7gqM3RV8+o1bf/jJ6Ydvo/uBQWHosAybOWWXDlomOrzNzilDo1z2IEOs6Tv
+fIt4oboClG4kchBTFpgKKw0Jhs/icP5gMlnGNTYxeDvE7hygvbKtxt3RnLkB4EOF
+8YhJ7a397boe3Zr/ihFWmyhHabaxEPcH/KooSunXFjX0C2K23SUxW/cUjn/P/jSo
+AYWOTRfy8JFHuVeiDqzLh2BuheRDYm+FiDgOX3u05XV2CPPAhm66OgtrVLYM7vMl
+OJFelxL/eL72sEh0qrTVSGz9jy62ARr4/cdXaxGVA0c3Lgt7JTRYfL0Or0czms4e
+yGF108DBPmdHgcdHclux2bIlfFW1vW2MIVEngrjgc5jVfeX7lCjtXPqLESq8DEmZ
+7ccr7H/2zJax6NfOa6gY0WMIYoi5GmhRQeTXiwxPCaRCFpTUFduOp1gXQItozPFR
+Aq3+8TfNAaEItz3nKUtX9ysxWqjGC4Y3WiV52dzA2pauEnuIYNTaHFdtRYN3tOT+
+qzLZOi/ig0KcAQgeIiNEyJKgUfwCGcXVGjCy9wOwArbk+QvuJ/eHMw3uzSPSqKni
+kPbpeFf636yqub43eB0ekXol7v27k9CXgrdT/6Oydo6+gHlGAF9noQLTf+VxkBZL
+vwzMup9dpWsZmREC2Fu17q+RbkF6QUyl6HGdF2e+H2D6RgfUescEkXpyIWKb9RLQ
+i3jSn1cqHRwg5ENEWPcTbO6K1nQUGvboA+d/cbEzFXiioqewCM1MIUQ+Gh9cJfIU
+Cp+Gb7K4lVzyP5YTnTkbq33e85Cbx5jUWhLrN6SdIyBPQWO7olbkJljznqXonSOC
+k5AaHko1O6+uJiTxdNYssrb8YC8v+MnmpzY4LzENL6J28dbew3ddux0lifbB/gBI
+zkCuW3cd7WX7cnYxEtBOusGuCBnmob9wTFOIKS3xLEf3aVJyHr/gvC7svZl2aeU=
+=8Wtk
+-----END PGP SIGNATURE-----

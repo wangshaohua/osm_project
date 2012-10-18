@@ -5,12 +5,12 @@
  *  
  */
 
-#include <fstream>
+//#include <fstream>
 #include <iostream>
 #include <string.h>
 
 #define VERBOSE 1
-#define BUFFER_SIZE 4096    //assuming block size of the filesystem is 4k
+#define BUFFER_SIZE 4096    //assuming each tag has size less than 4k
 
 
 
@@ -28,6 +28,7 @@ int main(int argc, char *argv[]){
 	buffer[BUFFER_SIZE - 1] = '\0'; 
 	unsigned int num_node;
 	/* read XML version and encoding info */
+	/*
 	f.getline(buffer, BUFFER_SIZE - 1, '>');
 	if (VERBOSE){
 		buffer[strlen(buffer) - 1] = '\0';    //omit the trailing '?' in output
@@ -54,4 +55,5 @@ int main(int argc, char *argv[]){
 	}
 	f.close();
 	return 0;
+	*/
 }
