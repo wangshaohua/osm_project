@@ -25,8 +25,8 @@ int main(int argc, char *argv[]){
 	printf("%s\n", result);
 	circ_strncpy(result, buffer, 10, 4, 5, 3);   //result should be "abc"
 	printf("%s\n", result);
-	printf("%d\n", circ_str_chr(buffer, 10, 2, 'a') - buffer);  //result should be 0 
-	printf("%d\n", circ_str_chr(buffer, 10, 2, 'c') - buffer);  //result should be 2
-	printf("%d\n", circ_str_chr(buffer, 10, 2, 'f') - buffer);  //result should be 5
+	printf("%ld\n", circ_str_chr(buffer, 10, 2, 'a') - buffer);  //result should be 0 
+	printf("%ld\n", circ_str_chr(buffer, 10, 2, 'c') - buffer);  //result should be 2
+	printf("%ld\n", circ_str_chr(buffer, 10, 2, 'f') - buffer);  //result should be 5
 	return 0;
 }

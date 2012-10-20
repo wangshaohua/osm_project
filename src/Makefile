@@ -1,0 +1,23 @@
+CC=g++
+CFLAGS=-c -Wall -O3
+LDFLAGS=
+OSM_PARSER=circ_buff.o osm_xml.o osm_parser.o
+CIRC_BUFF_TEST=circ_buff.o circ_buff_test.o
+OBJECTS=$(SOURCES:.cc=.o)
+EXECUTABLES=osm_parser circ_buff_test
+
+.PHONY: clean
+
+.cc.o:
+	$(CC) $(CFLAGS) $<
+
+all: $(EXECUTABLES)
+
+osm_parser: $(OSM_PARSER)
+	$(CC) $(LDFLAGS) $(OSM_PARSER) -o $@
+
+circ_buff_test: $(CIRC_BUFF_TEST)
+	$(CC) $(LDFLAGS) $(CIRC_BUFF_TEST) -o $@
+
+clean:
+	rm -rf *.o $(EXECUTABLES)
