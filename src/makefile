@@ -2,17 +2,11 @@ G=g++
 
 target: osm_parser
 
-osm_parser: circ_buff.o osm_xml.o read_osm_xml.o
+osm_parser: circ_buff.cc osm_xml.cc read_osm_xml.cc
 	$(G) -o $@ $^
 
-circ_buff.o: circ_buff.cc
-	$(G) -o $@ -c $<
-
-osm_xml.o: osm_xml.cc
-	$(G) -o $@ -c $<
-
-read_osm_xml.o: read_osm_xml.cc
-	$(G) -o $@ -c $<
+buff_test: circ_buff.cc test_circ.cc
+	$(G) -o $@ $^
 
 clean:
-	rm -rf *.o *~ a.out osm_parser
+	rm -rf *.o *~ a.out osm_parser buff_test
