@@ -18,5 +18,6 @@
 
 void read_osm_xml_elem(char *, const size_t, char *, size_t &, std::ifstream &);
 void read_osm_xml_attr(char *, char *, const size_t, char *&, char *&, size_t &, std::ifstream &);
+char *get_attr_val(char *);
 
 #endif

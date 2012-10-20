@@ -17,8 +17,8 @@ class osm_parse_result{
 		std::map< long, std::vector< std::pair<size_t, long> > > wv;  //map from way id to list of vertices contained in that way 
 		std::set<long> v;    //the list of vertices in the abstracted version of the map
 		std::set< std::pair<long, long> > e;    //the set of edges in the abstracted version of the map
-		long find_immediate_predecessor(const long, const size_t);
-		long find_immediate_successor(const long, const size_t);
+		long find_immediate_predecessor(std::vector< std::pair<size_t, long> > *, const size_t);
+		long find_immediate_successor(std::vector< std::pair<size_t, long> > *, const size_t);
 	public:
 		osm_parse_result(void){};
 		~osm_parse_result(void){};

@@ -1,15 +1,14 @@
 #include "osm_parse_result.h"
 
-long osm_parse_result::find_immediate_predecessor(const long way_id, const size_t index){   //find vertex in current way that is the immediate predecessor to the node at current index
-	size_t min = 0, max, c, c_i;		
-	std::vector< std::pair<size_t, long> > *c_wv = &(wv[way_id]);
-	if (((*c_wv)[0]).first >= index){
+long osm_parse_result::find_immediate_predecessor(std::vector< std::pair<size_t, long> > *c_wv, const size_t index){   //find vertex in current way that is the immediate predecessor to the node at current index
+	long min = 0, max, c, c_i;		
+	if ((*c_wv)[0].first >= index){
 		return -1;              //no immediate predecessor exists
 	}
 	max = c_wv -> size() - 1;
-	while (max != min){ 	
+	while (max != min){	
 		c = (max + min) / 2;
-		if ((c_i = ((*c_wv)[c]).first) > index){
+		if ((c_i = (*c_wv)[c].first) > index){
 			max = c - 1;
 		}else if (c_i < index){
 			min = c;
@@ -18,16 +17,15 @@ long osm_parse_result::find_immediate_predecessor(const long way_id, const size_
 	return min;   //max is -1 if current way contains only 1 vertex
 }
 
-long osm_parse_result::find_immediate_successor(const long way_id, const size_t index){ //find vertex in current way that is the immediate successor to the node at current index
-	size_t min = 0, max, c, c_i;		
-	std::vector< std::pair<size_t, long> > *c_wv = &(wv[way_id]);
+long osm_parse_result::find_immediate_successor(std::vector< std::pair<size_t, long> > *c_wv, const size_t index){ //find vertex in current way that is the immediate successor to the node at current index
+	long min = 0, max, c, c_i;		
 	max = c_wv -> size() - 1;
-	if (((*c_wv)[max]).first <= index){
+	if ((*c_wv)[max].first <= index){
 		return -1;              //no immediate successor exists
 	}
 	while (max != min){ 	
 		c = (max + min) / 2;
-		if ((c_i = ((*c_wv)[c]).first) < index){
+		if ((c_i = (*c_wv)[c].first) < index){
 			min = c + 1;
 		}else if (c_i > index){
 			max = c;
@@ -41,11 +39,12 @@ void osm_parse_result::insert_node_ref(const long node_id, const double lat, con
 }
 
 void osm_parse_result::insert_way_ref(const long node_id, const long way_id){
-	long l_id, _way_id;
-	size_t n_ind, _n_ind, p_n_v, s_n_v;
+	long l_id, _way_id, pn, sn;
+	size_t n_ind, _n_ind, p_n_v, s_n_v, c_n_v;
 	double lat, lon, l_lon, l_lat, dx, dy;
 	std::pair<double, double> *nd, *l_nd; 
 	std::vector<long> *w_nv = &(w[way_id]);
+	std::vector< std::pair<size_t, long> > *_c_wv, *c_wv = &(wv[way_id]);
 	std::map<long, size_t> *w_ni;
 	std::map<long, double>::iterator l_itr;
 	std::map<long, size_t>::iterator n_itr;
@@ -71,19 +70,26 @@ void osm_parse_result::insert_way_ref(const long node_id, const long way_id){
 	w_ni = &(wi[node_id]);
 	if (w_ni -> size()){    //current node is contained in another way 
 		if (v.find(node_id) == v.end()){   //current node is not a vertex in the graph yet
+			v.insert(node_id);
 			n_itr = w_ni -> begin();
 			_way_id = n_itr -> first;    //the way id of another way that contains the current node
 			_n_ind = n_itr -> second;    //the index of the current node in another way
-			if ((p_n_v = find_immediate_predecessor(_way_id, _n_ind)) != -1){
-				//create edge
+			_c_wv = &(wv[_way_id]);
+			if ((p_n_v = find_immediate_predecessor(_c_wv, _n_ind)) != -1){
+				e.insert(std::pair<long, long>(pn = (*c_wv)[p_n_v].second, node_id));    //create the required edge
 			}
-			if ((s_n_v = find_immediate_successor(_way_id, _n_ind)) != -1){
-				//create edge
+			if ((s_n_v = find_immediate_successor(_c_wv, _n_ind)) != -1){
+				e.insert(std::pair<long, long>(node_id, sn = (*c_wv)[s_n_v].second));    //create the required edge
 			}
-		}else{
-			//create 1 or 2 edges
+			if (p_n_v != -1 && s_n_v != -1){
+				e.erase(std::pair<long, long>(pn, sn));
+			}
+			_c_wv -> insert(_c_wv -> begin() + p_n_v + 1, std::pair<size_t, long>(_n_ind, node_id));   //insert as a vertex in the intersecting way
+		}
+		c_wv -> push_back(std::pair<size_t, long>(n_ind, node_id));   //otherwise no need to insert current node as vertex in the intersecting way 
+		if (n_ind){
+			e.insert(std::pair<long, long>((*w_nv)[n_ind - 1], node_id));    //create the required edge
 		}
 	}
 	w_ni -> insert(std::pair<long, size_t>(way_id, n_ind));
-
 }

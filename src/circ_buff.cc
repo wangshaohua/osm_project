@@ -7,6 +7,10 @@
 
 #include "circ_buff.h"
 
+//note: for debugging purpose only
+
+#include <stdlib.h>
+
 char *circ_str_chr(char *buffer, const size_t buffer_size, const size_t offset, const int c){   //locate the first occurance of a character in a circular buffer
 	char *p, *s, *e = buffer + buffer_size;
 	p = s = buffer + offset;
@@ -49,17 +53,19 @@ char *circ_strncpy(char *dest, char *buffer, const size_t buffer_size, const siz
 	return dest;
 }
 
-char *circ_substr(char *dest, char *buffer, const size_t buffer_size, const size_t offset, const size_t firstIndex, const size_t lastIndex){
+char *circ_substr(char *dest, const char *buffer, const size_t buffer_size, const size_t offset, const size_t firstIndex, const size_t lastIndex){
 	size_t n = lastIndex - firstIndex + 1, r;
-	char *s = buffer + firstIndex;
+	const char *s = buffer + firstIndex;
 	if (firstIndex >= offset){
 		if (lastIndex >= firstIndex){
 			strncpy(dest, s, n);
 		}else{
 			strncpy(dest, s, r = buffer_size - firstIndex);
 			strncpy(dest + r, buffer, lastIndex + 1);
+			n += buffer_size;    //note: otherwise n would be negative
 		}
 	}else{
+		printf("\ncpy\n");
 		strncpy(dest, s, n);
 	}
 	dest[n] = '\0';
