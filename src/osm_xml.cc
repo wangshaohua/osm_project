@@ -24,6 +24,7 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					exit(-1);
 				}
 				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+				if (VERBOSE){ printf("reading XML element <%s>\n", tag_name); }
 				if (!strcmp(tag_name, "node")){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lat
@@ -52,5 +53,5 @@ void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char 
 		exit(-1);
 	}
 	circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-	printf("attr == %s\n", attr);
+	if (VERBOSE){ printf("reading XML attribute: %s\n", attr); }
 }
