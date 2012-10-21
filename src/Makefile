@@ -14,10 +14,10 @@ EXECUTABLES=osm_parser circ_buff_test
 all: $(EXECUTABLES)
 
 osm_parser: $(OSM_PARSER)
-	$(CC) $(LDFLAGS) $(OSM_PARSER) -o $@
+	$(CC) $(LDFLAGS) $(OSM_PARSER) -o ../bin/$@
 
 circ_buff_test: $(CIRC_BUFF_TEST)
-	$(CC) $(LDFLAGS) $(CIRC_BUFF_TEST) -o $@
+	$(CC) $(LDFLAGS) $(CIRC_BUFF_TEST) -o ../bin/$@
 
 clean:
-	rm -rf *.o $(EXECUTABLES)
+	rm -rf *.o ../bin/$(EXECUTABLES)
