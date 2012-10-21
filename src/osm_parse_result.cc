@@ -19,7 +19,7 @@ long osm_parse_result::find_immediate_predecessor(std::vector< std::pair<size_t,
 			min = c;
 		}
 	}
-	return min;   //max is -1 if current way contains only 1 vertex
+	return max - min == 1 ? min : -1;   //max is -1 if current way contains only 1 vertex
 }
 
 long osm_parse_result::find_immediate_successor(std::vector< std::pair<size_t, long> > *c_wv, const size_t index){ //find vertex in current way that is the immediate successor to the node at current index
@@ -30,7 +30,7 @@ long osm_parse_result::find_immediate_successor(std::vector< std::pair<size_t, l
 	if ((*c_wv)[max].first <= index){
 		return -1;              //no immediate successor exists
 	}
-	max = c_wv -> size();
+	max = c_wv -> size() - 1;
 	while (max - min > 1){ 	
 		c = (max + min) / 2;
 		if ((c_i = (*c_wv)[c].first) <= index){
@@ -39,7 +39,7 @@ long osm_parse_result::find_immediate_successor(std::vector< std::pair<size_t, l
 			max = c;
 		}
 	}
-	return max;   //max is -1 if current way contains only 1 vertex
+	return max - min == 1 ? max : -1;   //max is -1 if current way contains only 1 vertex
 }
 
 void osm_parse_result::insert_node_ref(const long n_id, const double lat, const double lon){
@@ -92,12 +92,16 @@ printf("line 74: inserting node %ld to vertex set\n", n_id);
 //printf("finding immediate predecessor of %ld\n", n_id);
 			if ((p_n_v = find_immediate_predecessor(_c_wv, _n_ind)) != -1){
 //printf("immediate predecessor of %ld found\n", n_id);
+//printf("inserting edge (%ld, %ld)\n", pn = (*_c_wv)[p_n_v].second, n_id);
 				e.insert(std::pair< long, std::pair<long, long> >(_way_id, std::pair<long, long>(pn = (*_c_wv)[p_n_v].second, n_id)));    //create the required edge
 				if (_c_wv -> size() > (n_v = p_n_v + 1)){
-					e.insert(std::pair< long, std::pair<long, long> >(_way_id, std::pair<long, long>(sn = (*_c_wv)[n_v].second, n_id)));    //create the required edge
+//printf("inserting edge (%ld, %ld)\n", (*_c_wv)[n_v].second, n_id);
+					e.insert(std::pair< long, std::pair<long, long> >(_way_id, std::pair<long, long>(n_id, sn = (*_c_wv)[n_v].second)));    //create the required edge
 					s_n_v = n_v;
 				}
 			}else if ((s_n_v = find_immediate_successor(_c_wv, _n_ind)) != -1){
+//printf("_way_id == %ld, finding immediate successor of index == %ld --> index == %ld\n", _way_id,  _n_ind, s_n_v);
+//printf("inserting edge (%ld, %ld)\n", n_id, (*_c_wv)[s_n_v].second);
 				e.insert(std::pair< long, std::pair<long, long> >(_way_id, std::pair<long, long>(n_id, sn = (*_c_wv)[s_n_v].second)));    //create the required edge
 			}
 			if (p_n_v != -1 && s_n_v != -1){
@@ -108,10 +112,16 @@ printf("line 74: inserting node %ld to vertex set\n", n_id);
 //else{
 //printf("node %ld is already in vertex set\n", n_id);
 //}
-		c_wv -> push_back(std::pair<size_t, long>(n_ind, n_id));   //otherwise no need to insert current node as vertex in the intersecting way 
-		if (n_ind){
-			e.insert(std::pair< long, std::pair<long, long> >(way_id, std::pair<long, long>((*c_w)[n_ind - 1], n_id)));    //create the required edge
+		if (c_wv -> size()){
+//printf("inserting edge (%ld, %ld)\n", (*c_w)[n_ind - 1], n_id);
+			e.insert(std::pair< long, std::pair<long, long> >(way_id, std::pair<long, long>(c_wv -> back().second, n_id)));    //create the required edge
 		}
+		c_wv -> push_back(std::pair<size_t, long>(n_ind, n_id));   //otherwise no need to insert current node as vertex in the intersecting way 
+		/*
+		*/
+	}else if (!n_ind){
+		v.insert(n_id);    //the starting point of each way must be a vertex
+		wv[way_id].push_back(std::pair<size_t, long>(0, n_id));
 	}
 	c_wi -> insert(std::pair<long, size_t>(way_id, n_ind));
 }
