@@ -84,22 +84,22 @@ void osm_parse_result::insert_way_ref(const long node_id, const long way_id){
 			_n_ind = n_itr -> second;    //the index of the current node in another way
 			_c_wv = &(wv[_way_id]);
 			if ((p_n_v = find_immediate_predecessor(_c_wv, _n_ind)) != -1){
-				e.insert(std::pair<long, long>(pn = (*c_wv)[p_n_v].second, node_id));    //create the required edge
+				e.insert(std::pair< long, std::pair<long, long> >(_way_id, std::pair<long, long>(pn = (*c_wv)[p_n_v].second, node_id)));    //create the required edge
 				if (c_wv -> size() > (n_v = p_n_v + 1)){
-					e.insert(std::pair<long, long>(sn = (*c_wv)[n_v].second, node_id));    //create the required edge
+					e.insert(std::pair< long, std::pair<long, long> >(_way_id, std::pair<long, long>(sn = (*c_wv)[n_v].second, node_id)));    //create the required edge
 					s_n_v = n_v;
 				}
 			}else if ((s_n_v = find_immediate_successor(_c_wv, _n_ind)) != -1){
-				e.insert(std::pair<long, long>(node_id, sn = (*c_wv)[s_n_v].second));    //create the required edge
+				e.insert(std::pair< long, std::pair<long, long> >(_way_id, std::pair<long, long>(node_id, sn = (*c_wv)[s_n_v].second)));    //create the required edge
 			}
 			if (p_n_v != -1 && s_n_v != -1){
-				e.erase(std::pair<long, long>(pn, sn));
+				e.erase(std::pair< long, std::pair<long, long> >(_way_id, std::pair<long, long>(pn, sn)));
 			}
 			_c_wv -> insert(_c_wv -> begin() + p_n_v + 1, std::pair<size_t, long>(_n_ind, node_id));   //insert as a vertex in the intersecting way
 		}
 		c_wv -> push_back(std::pair<size_t, long>(n_ind, node_id));   //otherwise no need to insert current node as vertex in the intersecting way 
 		if (n_ind){
-			e.insert(std::pair<long, long>((*c_w)[n_ind - 1], node_id));    //create the required edge
+			e.insert(std::pair< long, std::pair<long, long> >(way_id, std::pair<long, long>((*c_w)[n_ind - 1], node_id)));    //create the required edge
 		}
 	}
 	c_wi -> insert(std::pair<long, size_t>(way_id, n_ind));
@@ -119,7 +119,7 @@ void osm_parse_result::insert_end_pts(void){
 				v.insert(n_id);
 				c_wv = &(wv[w_iter -> first]);
 //printf("insert_end_pts: inserting edge (%ld, %ld)\n", c_wv -> back().second, n_id);
-				e.insert(std::pair<long, long>(c_wv -> back().second, n_id));    //create the required edge
+				e.insert(std::pair< long, std::pair<long, long> >(w_iter -> first, std::pair<long, long>(c_wv -> back().second, n_id)));    //create the required edge
 				c_wv -> push_back(std::pair<size_t, long>(ind, n_id));
 			}		
 		}

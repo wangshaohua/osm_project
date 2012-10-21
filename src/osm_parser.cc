@@ -34,8 +34,8 @@ for (std::set<long>::iterator v_iter = res.get_vertex_set().begin(); v_iter != r
 printf("%ld, ", *v_iter);
 }
 printf("\nedge(s):\n");
-for (std::set< std::pair<long, long> >::iterator e_iter = res.get_edge_set().begin(); e_iter != res.get_edge_set().end(); ++e_iter){
-printf("(%ld, %ld), ", e_iter -> first, e_iter -> second);
+for (std::set< std::pair< long, std::pair<long, long> > >::iterator e_iter = res.get_edge_set().begin(); e_iter != res.get_edge_set().end(); ++e_iter){
+printf("<%ld, (%ld, %ld)>, ", e_iter -> first, e_iter -> second.first, e_iter -> second.second);
 }
 printf("\n");
 	return 0;

@@ -16,7 +16,7 @@ class osm_parse_result{
 		std::map<long, double> wl;    //map from way id to estimated total length of the way
 		std::map< long, std::vector< std::pair<size_t, long> > > wv;  //map from way id to list of vertices contained in that way 
 		std::set<long> v;    //the list of vertices in the abstracted version of the map
-		std::set< std::pair<long, long> > e;    //the set of edges in the abstracted version of the map
+		std::set< std::pair< long, std::pair<long, long> > > e;    //the set of edges in the abstracted version of the map
 		long find_immediate_predecessor(std::vector< std::pair<size_t, long> > *, const size_t);
 		long find_immediate_successor(std::vector< std::pair<size_t, long> > *, const size_t);
 	public:
@@ -28,7 +28,7 @@ class osm_parse_result{
 		const std::set<long>& get_vertex_set(void){
 			return v;
 		}
-		const std::set< std::pair<long, long> >& get_edge_set(void){
+		const std::set< std::pair< long, std::pair<long, long> > >& get_edge_set(void){
 			return e;
 		}
 };
