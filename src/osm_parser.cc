@@ -17,6 +17,7 @@ int main(int argc, char *argv[]){
 	char buffer[DEFAULT_BUFFER_SIZE + 1];
 	char tag_name[MAX_TL + 1];
 	size_t offset = 0;
+	osm_parse_result res;
 	buffer[DEFAULT_BUFFER_SIZE] = '\0';
 	tag_name[MAX_TL] = '\0';
 	std::ifstream f(argv[1]);
@@ -25,6 +26,6 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	f.read(buffer, DEFAULT_BUFFER_SIZE);
-	read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f);
+	read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f, res);
 	return 0;
 }

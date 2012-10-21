@@ -1,15 +1,15 @@
 #include "osm_parse_result.h"
 
 long osm_parse_result::find_immediate_predecessor(std::vector< std::pair<size_t, long> > *c_wv, const size_t index){   //find vertex in current way that is the immediate predecessor to the node at current index
-	long min = 0, max, c, c_i;		
-	if ((*c_wv)[0].first >= index){
+	size_t min = 0, max, c, c_i;		
+	if (c_wv -> empty() || (*c_wv)[0].first >= index){
 		return -1;              //no immediate predecessor exists
 	}
-	max = c_wv -> size() - 1;
-	while (max != min){	
+	max = c_wv -> size();
+	while (max - min > 1){	
 		c = (max + min) / 2;
-		if ((c_i = (*c_wv)[c].first) > index){
-			max = c - 1;
+		if ((c_i = (*c_wv)[c].first) >= index){
+			max = c;
 		}else if (c_i < index){
 			min = c;
 		}
@@ -18,15 +18,18 @@ long osm_parse_result::find_immediate_predecessor(std::vector< std::pair<size_t,
 }
 
 long osm_parse_result::find_immediate_successor(std::vector< std::pair<size_t, long> > *c_wv, const size_t index){ //find vertex in current way that is the immediate successor to the node at current index
-	long min = 0, max, c, c_i;		
-	max = c_wv -> size() - 1;
+	size_t min = 0, max, c, c_i;		
+	if (c_wv -> empty()){ 
+		return -1;
+	}
 	if ((*c_wv)[max].first <= index){
 		return -1;              //no immediate successor exists
 	}
-	while (max != min){ 	
+	max = c_wv -> size();
+	while (max - min > 1){ 	
 		c = (max + min) / 2;
-		if ((c_i = (*c_wv)[c].first) < index){
-			min = c + 1;
+		if ((c_i = (*c_wv)[c].first) <= index){
+			min = c;
 		}else if (c_i > index){
 			max = c;
 		}
@@ -39,8 +42,8 @@ void osm_parse_result::insert_node_ref(const long node_id, const double lat, con
 }
 
 void osm_parse_result::insert_way_ref(const long node_id, const long way_id){
-	long l_id, _way_id, pn, sn;
-	size_t n_ind, _n_ind, p_n_v, s_n_v, c_n_v;
+	long l_id, _way_id, p_n_v, s_n_v = -1;
+	size_t pn, sn, n_ind, _n_ind, n_v;
 	double lat, lon, l_lon, l_lat, dx, dy;
 	std::pair<double, double> *nd, *l_nd; 
 	std::vector<long> *w_nv = &(w[way_id]);
@@ -77,8 +80,11 @@ void osm_parse_result::insert_way_ref(const long node_id, const long way_id){
 			_c_wv = &(wv[_way_id]);
 			if ((p_n_v = find_immediate_predecessor(_c_wv, _n_ind)) != -1){
 				e.insert(std::pair<long, long>(pn = (*c_wv)[p_n_v].second, node_id));    //create the required edge
-			}
-			if ((s_n_v = find_immediate_successor(_c_wv, _n_ind)) != -1){
+				if (c_wv -> size() > (n_v = p_n_v + 1)){
+					e.insert(std::pair<long, long>(sn = (*c_wv)[n_v].second, node_id));    //create the required edge
+					s_n_v = n_v;
+				}
+			}else if ((s_n_v = find_immediate_successor(_c_wv, _n_ind)) != -1){
 				e.insert(std::pair<long, long>(node_id, sn = (*c_wv)[s_n_v].second));    //create the required edge
 			}
 			if (p_n_v != -1 && s_n_v != -1){

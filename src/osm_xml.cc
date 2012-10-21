@@ -7,8 +7,10 @@
 
 #include "osm_xml.h"
 
-void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t & offset, std::ifstream & f){ 
+void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t &offset, std::ifstream &f, osm_parse_result &res){ 
 	char c[2], attr[MAX_TL], *s, *e;
+	long n_id, w_id = 0;
+	double lon, lat; 
 	while (!f.eof()){
 		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
 			offset = 0;
@@ -25,16 +27,21 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 				}
 
 				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-				//if (VERBOSE){ printf("reading XML element <%s>\n", tag_name); }
 				if (!strcmp(tag_name, "node")){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
-					printf("ID: %ld\n\n", get_attr_val<long>(attr));
+					n_id = get_attr_val<long>(attr);
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lat
-					printf("LAT: %f\n\n", get_attr_val<double>(attr));
+					lat = get_attr_val<double>(attr);
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lon
-					printf("LON: %f\n\n", get_attr_val<double>(attr));
+					lon = get_attr_val<double>(attr);
+					res.insert_node_ref(n_id, lat, lon);
 				}else if (!strcmp(tag_name, "way")){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //way id
+					w_id = get_attr_val<long>(attr);
+				}else if (!strcmp(tag_name, "nd")){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //nd ref id
+					n_id = get_attr_val<long>(attr);
+					res.insert_way_ref(n_id, w_id);
 				}
 				update_buffer(buffer, buffer_size, e - buffer, offset, f);
 			}
@@ -57,5 +64,4 @@ void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char 
 		exit(-1);
 	}
 	circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-	//if (VERBOSE){ printf("reading XML attribute: %s\n", attr); }
 }
