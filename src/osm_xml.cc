@@ -36,7 +36,7 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 				}
 
 				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-printf("tag_name == %s\n", tag_name);
+//printf("tag_name == %s\n", tag_name);
 				if (!strcmp(tag_name, "node")){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
 					n_id = get_attr_val<long>(attr);
@@ -59,7 +59,7 @@ printf("tag_name == %s\n", tag_name);
 //printf("line 47: buffer == \n%s%s\noffset == %ld\n\n\n", strncpy(dbg0, buffer + offset, buffer_size - offset), strncpy(dbg1, buffer, offset), offset);
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //nd ref id
 					n_id = get_attr_val<long>(attr);
-printf("nd_ref == %ld\n", n_id);
+//printf("nd_ref == %ld\n", n_id);
 					res.insert_way_ref(n_id, w_id);
 				}
 //else{

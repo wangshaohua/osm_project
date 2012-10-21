@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Yitao Li" copyright="Yitao Li" attribution="this is a test case for the osm project" license="none">
+ <bounds minlat="39.1000000" minlon="-76.8000000" maxlat="39.2000000" maxlon="-76.7000000"/>
+ <node id="0" lat="39.0972771" lon="-76.8004246" other_attr=""/>
+ <node id="1" lat="39.0998888" lon="-76.8024777" other_attr=""/>
+ <node id="2" lat="39.1998888" lon="-76.1124777" other_attr=""/>
+ <node id="3" lat="39.5432123" lon="-76.3333333" other_attr=""/>
+ <node id="4" lat="39.1428571" lon="-76.3371337" other_attr=""/>
+ <way id="1337" other_attr="">
+   <nd ref="0"/>
+   <nd ref="1"/>
+   <nd ref="2"/>
+ </way>
+ <way id="2012" other_attr="">
+   <nd ref="0"/>
+   <nd ref="3"/>
+   <nd ref="4"/>
+ </way>
+</osm>

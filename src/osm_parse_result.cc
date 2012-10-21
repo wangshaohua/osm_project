@@ -110,13 +110,17 @@ void osm_parse_result::insert_end_pts(void){
 	long n_id;
 	std::map< long, std::vector<long> >::iterator w_iter;
 	std::set<long>::iterator v_iter;
+	std::vector< std::pair<size_t, long> > *c_wv;
 	for (std::map< long, std::vector<long> >::iterator w_iter = w.begin(); w_iter != w.end(); ++w_iter){
+//printf("insert_end_pts: way_id == %ld, size == %ld\n", w_iter -> first, w_iter -> second.size());
 		if ((ind = w_iter -> second.size() - 1) > 0){
 			n_id = w_iter -> second.back();
 			if ((v_iter = v.find(n_id)) == v.end()){     //current end point is not a vertex
 				v.insert(n_id);
-				wv[w_iter -> first].push_back(std::pair<size_t, long>(ind, n_id));
-				e.insert(std::pair<long, long>((w_iter -> second)[ind - 1], n_id));    //create the required edge
+				c_wv = &(wv[w_iter -> first]);
+//printf("insert_end_pts: inserting edge (%ld, %ld)\n", c_wv -> back().second, n_id);
+				e.insert(std::pair<long, long>(c_wv -> back().second, n_id));    //create the required edge
+				c_wv -> push_back(std::pair<size_t, long>(ind, n_id));
 			}		
 		}
 	}
