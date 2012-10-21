@@ -11,6 +11,10 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 	char c[2], attr[MAX_TL], *s, *e;
 	long n_id, w_id = 0;
 	double lon, lat; 
+	
+    FILE *fp_nodes = fopen(NODES_OUTPUT_FILE, "a+");
+    FILE *fp_edges = fopen(EDGES_OUTPUT_FILE, "a+");
+	
 	while (!f.eof()){
 		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
 			offset = 0;
@@ -35,6 +39,10 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lon
 					lon = get_attr_val<double>(attr);
 					res.insert_node_ref(n_id, lat, lon);
+					
+					if (fp_nodes != NULL)
+                        fprintf(fp_nodes, "%ld %f %f\n", n_id, lat, lon);
+					
 				}else if (!strcmp(tag_name, "way")){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //way id
 					w_id = get_attr_val<long>(attr);
@@ -53,6 +61,12 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 			s = circ_str_chr(buffer, buffer_size, offset, '<');
 		}
 	}
+	
+	if (fp_nodes != NULL)
+        fclose(fp_nodes);
+    
+    if (fp_edges != NULL)
+        fclose(fp_edges);
 }
 
 void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char *&s, char *&e, size_t & offset, std::ifstream & f){ 
