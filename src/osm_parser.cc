@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 	osm_parse_result res;
 	buffer[DEFAULT_BUFFER_SIZE] = '\0';
 	tag_name[MAX_TL] = '\0';
-	std::ifstream f(argv[1]);
+	std::ifstream f(argv[1], std::ios_base::in);
 	if (!f.is_open()){
 		perror("Error opening input file\n");
 		exit(1);

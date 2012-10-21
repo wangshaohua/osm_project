@@ -15,8 +15,8 @@
 #define NODES_OUTPUT_FILE "../doc/output/WA_Nodes.txt"
 #define EDGES_OUTPUT_FILE "../doc/output/WA_Edges.txt"
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <sstream>
 #include "circ_buff.h"
 #include "osm_parse_result.h"

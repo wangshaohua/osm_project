@@ -7,6 +7,11 @@
 
 #include "osm_xml.h"
 
+
+//FOR DEBUGGING PURPOSE ONLY:
+
+#include <stdio.h>
+
 void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t &offset, std::ifstream &f, osm_parse_result &res){ 
 	char c[2], attr[MAX_TL], *s, *e;
 	long n_id, w_id = 0;
@@ -20,7 +25,6 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 //    FILE *fp_nodes = fopen(NODES_OUTPUT_FILE, "a+");
 //    FILE *fp_edges = fopen(EDGES_OUTPUT_FILE, "a+");
 	
-//while (!f.eof()){
 //>>>>>>> a07e5fc6f798cbc27937101eee33291d79c74a9f
 		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
 			offset = 0;
@@ -34,7 +38,7 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 //printf("line 23: buffer == \n%s%s\noffset == %ld\n\n\n", strncpy(dbg0, buffer + offset, buffer_size - offset), strncpy(dbg1, buffer, offset), offset);
 				e = circ_str_chr(buffer, buffer_size, offset, ' ');
 				if (!e || circ_len(buffer_size, offset, offset, e - buffer) > MAX_TL){
-					perror("Error: XML tag name contains too many characters\n");
+					std::cerr<<"Error: XML tag name contains too many characters\n";
 					exit(-1);
 				}
 
