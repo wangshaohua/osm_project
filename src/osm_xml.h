@@ -10,6 +10,10 @@
 
 #define DEFAULT_BUFFER_SIZE 4096   //4k: the default filesystem block size on most *NIX systems
 #define MAX_TL 256   //assuming no XML element name contains more than 32 characters 
+#define MAX_OUTPUT_LINE_LEN 256
+
+#define NODES_OUTPUT_FILE "../doc/output/WA_Nodes.txt"
+#define EDGES_OUTPUT_FILE "../doc/output/WA_Edges.txt"
 
 #include <stdio.h>
 #include <stdlib.h>
