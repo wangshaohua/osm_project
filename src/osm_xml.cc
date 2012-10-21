@@ -5,12 +5,10 @@
  *
  */
 
-#include <sstream>
 #include "osm_xml.h"
 
 void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t & offset, std::ifstream & f){ 
 	char c[2], attr[MAX_TL], *s, *e;
-	std::stringstream ss;
 	while (!f.eof()){
 		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
 			offset = 0;
@@ -30,12 +28,11 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 				//if (VERBOSE){ printf("reading XML element <%s>\n", tag_name); }
 				if (!strcmp(tag_name, "node")){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
-					printf("ID: %s\n\n", get_attr_val(attr));
+					printf("ID: %ld\n\n", get_attr_val<long>(attr));
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lat
-					printf("LAT: %s\n\n", get_attr_val(attr));
-					//printf("NODE ID: %s\n\n", attr + 4);
+					printf("LAT: %f\n\n", get_attr_val<double>(attr));
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lon
-					printf("LON: %s\n\n", get_attr_val(attr));
+					printf("LON: %f\n\n", get_attr_val<double>(attr));
 				}else if (!strcmp(tag_name, "way")){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //way id
 				}
@@ -61,11 +58,4 @@ void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char 
 	}
 	circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
 	//if (VERBOSE){ printf("reading XML attribute: %s\n", attr); }
-}
-
-char *get_attr_val(char *attr){   //this is assuming all attributes are delimited by double quotes
-	char *s;
-	s = strchr(attr, '"');
-	*(strchr(++s, '"')) = '\0';
-	return s;
 }
