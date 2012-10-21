@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Yitao Li" copyright="Yitao Li" attribution="this is a test case for the osm project" license="none">
+ <bounds minlat="39.1000000" minlon="-76.8000000" maxlat="39.2000000" maxlon="-76.7000000"/>
+</osm>
