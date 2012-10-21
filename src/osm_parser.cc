@@ -27,5 +27,7 @@ int main(int argc, char *argv[]){
 	}
 	f.read(buffer, DEFAULT_BUFFER_SIZE);
 	read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f, res);
+	printf("# of vert(ices): %ld\n", res.get_vertex_set().size());
+	printf("# of edge(s): %ld\n", res.get_edge_set().size());
 	return 0;
 }

@@ -65,7 +65,6 @@ char *circ_substr(char *dest, const char *buffer, const size_t buffer_size, cons
 			n += buffer_size;    //note: otherwise n would be negative
 		}
 	}else{
-		printf("\ncpy\n");
 		strncpy(dest, s, n);
 	}
 	dest[n] = '\0';

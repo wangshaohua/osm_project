@@ -1,5 +1,28 @@
 #include "osm_parse_result.h"
 
+		#include <stdio.h>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 long osm_parse_result::find_immediate_predecessor(std::vector< std::pair<size_t, long> > *c_wv, const size_t index){   //find vertex in current way that is the immediate predecessor to the node at current index
 	size_t min = 0, max, c, c_i;		
 	if (c_wv -> empty() || (*c_wv)[0].first >= index){
@@ -51,6 +74,7 @@ void osm_parse_result::insert_way_ref(const long node_id, const long way_id){
 	std::map<long, size_t> *w_ni;
 	std::map<long, double>::iterator l_itr;
 	std::map<long, size_t>::iterator n_itr;
+//printf("hello\n");
 	if ((n_ind = w_nv -> size())){
 		l_id = w_nv -> back();
 		nd = &(n[node_id]);
