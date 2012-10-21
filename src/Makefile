@@ -21,4 +21,4 @@ circ_buff_test: $(CIRC_BUFF_TEST)
 	$(CC) $(LDFLAGS) $(CIRC_BUFF_TEST) -o $(BIN_DIR)$@
 
 clean:
-	rm -f *.o && cd $(BIN_DIR) && rm -f $(EXECUTABLES) && cd -
+	rm -f *.o; cd $(BIN_DIR); rm -f $(EXECUTABLES); cd -
