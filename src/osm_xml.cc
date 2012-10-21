@@ -16,16 +16,9 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 	char c[2], attr[MAX_TL], *s, *e;
 	long n_id, w_id = 0;
 	double lon, lat; 
-//<<<<<<< HEAD
 //char *dbg0 = new char[buffer_size];
 //char *dbg1 = new char[buffer_size];
 	do{
-//=======
-	
-//    FILE *fp_nodes = fopen(NODES_OUTPUT_FILE, "a+");
-//    FILE *fp_edges = fopen(EDGES_OUTPUT_FILE, "a+");
-	
-//>>>>>>> a07e5fc6f798cbc27937101eee33291d79c74a9f
 		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
 			offset = 0;
 			f.read(buffer, buffer_size);
@@ -43,7 +36,7 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 				}
 
 				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-//printf("tag_name == %s\n", tag_name);
+printf("tag_name == %s\n", tag_name);
 				if (!strcmp(tag_name, "node")){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
 					n_id = get_attr_val<long>(attr);
@@ -87,34 +80,24 @@ printf("nd_ref == %ld\n", n_id);
 //printf("line 66: buffer == \n%s%s\noffset == %ld\n\n\n", strncpy(dbg0, buffer + offset, buffer_size - offset), strncpy(dbg1, buffer, offset), offset);
 			s = circ_str_chr(buffer, buffer_size, offset, '<');
 		}
-//<<<<<<< HEAD
 	}while (!f.eof());
-/*=======
-	}
-	
-	if (fp_nodes != NULL)
-        fclose(fp_nodes);
-    
-    if (fp_edges != NULL)
-        fclose(fp_edges);
->>>>>>> a07e5fc6f798cbc27937101eee33291d79c74a9f
-*/
+	res.insert_end_pts();
 }
 
 void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char *&s, char *&e, size_t & offset, std::ifstream & f){ 
-	char *es; 
+	char *es = NULL; 
 	update_buffer(buffer, buffer_size, e - buffer, offset, f);
 	s = e; 
 	e = circ_str_chr(buffer, buffer_size, offset, ' ');
 	es = circ_str_chr(buffer, buffer_size, offset, '/');
 	if (es){
-		if (!e || es < e){
+		if (!e || (es - buffer - offset + buffer_size) % buffer_size < (e - buffer - offset + buffer_size) % buffer_size){
 			e = es;
 		}
 	}
 	es = circ_str_chr(buffer, buffer_size, offset, '>');
 	if (es){
-		if (!e || es < e){
+		if (!e || (es - buffer - offset + buffer_size) % buffer_size < (e - buffer - offset + buffer_size) % buffer_size){
 			e = es;
 		}
 	}

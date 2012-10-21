@@ -24,6 +24,7 @@ class osm_parse_result{
 		~osm_parse_result(void){};
 		void insert_node_ref(const long, const double, const double);  //inserting into n_map 	
 		void insert_way_ref(const long, const long);    //inserting into w_map
+		void insert_end_pts(void);
 		const std::set<long>& get_vertex_set(void){
 			return v;
 		}
