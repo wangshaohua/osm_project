@@ -30,11 +30,11 @@ int main(int argc, char *argv[]){
 std::cout<<"# of vert(ices): "<<res.get_vertex_set().size()<<"\n";
 std::cout<<"# of edge(s): "<<res.get_edge_set().size()<<"\n";
 std::cout<<"vert(ices):\n";
-for (std::set<long>::iterator v_iter = res.get_vertex_set().begin(); v_iter != res.get_vertex_set().end(); ++v_iter){
+for (std::set<size_t>::iterator v_iter = res.get_vertex_set().begin(); v_iter != res.get_vertex_set().end(); ++v_iter){
 std::cout<<*v_iter<<", ";
 }
 std::cout<<"\nedge(s):\n";
-for (std::set< std::pair< long, std::pair<long, long> > >::iterator e_iter = res.get_edge_set().begin(); e_iter != res.get_edge_set().end(); ++e_iter){
+for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::iterator e_iter = res.get_edge_set().begin(); e_iter != res.get_edge_set().end(); ++e_iter){
 std::cout<<"< "<<e_iter -> first<<", ("<<e_iter -> second.first<<", "<<e_iter -> second.second<<") >, ";
 }
 std::cout<<"\n";
