@@ -27,16 +27,16 @@ int main(int argc, char *argv[]){
 	}
 	f.read(buffer, DEFAULT_BUFFER_SIZE);
 	read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f, res);
-printf("# of vert(ices): %ld\n", res.get_vertex_set().size());
-printf("# of edge(s): %ld\n", res.get_edge_set().size());
-printf("vert(ices):\n");
+std::cout<<"# of vert(ices): "<<res.get_vertex_set().size()<<"\n";
+std::cout<<"# of edge(s): "<<res.get_edge_set().size()<<"\n";
+std::cout<<"vert(ices):\n";
 for (std::set<long>::iterator v_iter = res.get_vertex_set().begin(); v_iter != res.get_vertex_set().end(); ++v_iter){
-printf("%ld, ", *v_iter);
+std::cout<<*v_iter<<", ";
 }
-printf("\nedge(s):\n");
+std::cout<<"\nedge(s):\n";
 for (std::set< std::pair< long, std::pair<long, long> > >::iterator e_iter = res.get_edge_set().begin(); e_iter != res.get_edge_set().end(); ++e_iter){
-printf("<%ld, (%ld, %ld)>, ", e_iter -> first, e_iter -> second.first, e_iter -> second.second);
+std::cout<<"< "<<e_iter -> first<<", ("<<e_iter -> second.first<<", "<<e_iter -> second.second<<") >, ";
 }
-printf("\n");
+std::cout<<"\n";
 	return 0;
 }

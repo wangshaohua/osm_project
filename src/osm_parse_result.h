@@ -1,3 +1,10 @@
+/* 
+ *  code for converting the XML parse result into a directed graph 
+ *
+ *  author: Yitao Li
+ *
+ */
+
 #ifndef OSM_PARSE_RESULT_H
 #define OSM_PARSE_RESULT_H
 
