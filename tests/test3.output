@@ -1,0 +1,6 @@
+# of vert(ices): 3
+# of edge(s): 2
+vert(ices):
+0, 2, 4, 
+edge(s):
+< 1337, (0, 2) >, < 2012, (0, 4) >,
