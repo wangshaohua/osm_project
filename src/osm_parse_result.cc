@@ -126,6 +126,10 @@ void osm_parse_result::insert_end_pts(void){
 	}
 }
 
+void osm_parse_result::insert_way_type(const size_t w_id, const char *type){
+	w_t[w_id] = std::string(type);
+}
+
 double osm_parse_result::get_edge_cost(const size_t way_id, const size_t p, const size_t q){
 	std::map<size_t, double> *c_wl = &(wl.find(way_id) -> second);
 	return fabs(c_wl -> find(q) -> second - c_wl -> find(p) -> second);

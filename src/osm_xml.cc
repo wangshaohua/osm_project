@@ -42,7 +42,14 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //nd ref id
 					n_id = get_attr_val<long>(attr);
 					res.insert_way_ref(n_id, w_id);
+				}else if(w_id && !strcmp(tag_name, "tag")){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+					if (!strncmp(get_attr_substr(attr), W_TYPE, W_TYPE_LEN)){  
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+						res.insert_way_type(w_id, get_attr_substr(attr));
+					}
 				}
+
 				update_buffer(buffer, buffer_size, e - buffer, offset, f);
 			}
 			while (!(s = circ_str_chr(buffer, buffer_size, offset, '>'))){
@@ -78,4 +85,14 @@ void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char 
 		exit(-1);
 	}
 	circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+}
+
+char *get_attr_substr(char *attr){   //note: the source attribute may contain space in it
+	char *s = strchr(attr, '"'), *e = strchr(++s, '"');
+	if (e){
+		*e = '\0';
+	}else{
+		*s = '\0';
+	}
+	return s;	
 }

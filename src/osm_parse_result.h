@@ -12,6 +12,7 @@
 #include <vector>
 #include <set>
 #include <list>
+#include <string>
 #include <assert.h>
 #include <math.h>
 
@@ -24,6 +25,7 @@ class osm_parse_result{
 		std::map< size_t, std::vector< std::pair<size_t, size_t> > > wv;  //map from way id to list of vertices contained in that way 
 		std::set<size_t> v;    //the list of vertices in the abstracted version of the map
 		std::set< std::pair< size_t, std::pair<size_t, size_t> > > e;    //the set of edges in the abstracted version of the map
+		std::map<size_t, std::string> w_t;
 		long find_immediate_predecessor(std::vector< std::pair<size_t, size_t> > *, const size_t);
 		long find_immediate_successor(std::vector< std::pair<size_t, size_t> > *, const size_t);
 	public:
@@ -32,6 +34,7 @@ class osm_parse_result{
 		void insert_node_ref(const size_t, const double, const double);  //inserting into n_map 	
 		void insert_way_ref(const size_t, const size_t);    //inserting into w_map
 		void insert_end_pts(void);
+		void insert_way_type(const size_t, const char *);
 		double get_edge_cost(const size_t, const size_t, const size_t);  
 		const std::set<size_t>& get_vertex_set(void) const{
 			return v;
