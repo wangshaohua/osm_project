@@ -26,7 +26,7 @@
 
 void read_osm_xml_elem(char *, const size_t, char *, size_t &, std::ifstream &, osm_parse_result &);
 void read_osm_xml_attr(char *, char *, const size_t, char *&, char *&, size_t &, std::ifstream &);
-char *get_attr_substr(char *);
+char *get_attr_str(char *);
 
 template <typename T> T get_attr_val(char *attr){   //this is assuming all attributes are delimited by double quotes
 	char *s = strchr(attr, '"');

@@ -29,6 +29,7 @@ int main(int argc, char *argv[]){
 	read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f, res);
 std::cout<<"# of vert(ices): "<<res.get_vertex_set().size()<<'\n';
 std::cout<<"# of edge(s): "<<res.get_edge_set().size()<<'\n';
+/*
 std::cout<<"vert(ices):\n";
 for (std::set<size_t>::iterator v_iter = res.get_vertex_set().begin(); v_iter != res.get_vertex_set().end(); ++v_iter){
 std::cout<<*v_iter<<", ";
@@ -37,7 +38,12 @@ std::cout<<"\nedge(s):\n";
 for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::iterator e_iter = res.get_edge_set().begin(); e_iter != res.get_edge_set().end(); ++e_iter){
 std::cout<<"< "<<e_iter -> first<<", ("<<e_iter -> second.first<<", "<<e_iter -> second.second<<") >, ";
 }
-std::cout<<'\n';
+#std::cout<<'\n';
+*/
+res.write_node_file("/tmp/WA_Nodes.txt");
+res.write_vertex_file("/tmp/WA_Vertices.txt");
+res.write_edge_file("/tmp/WA_Edges.txt");
+res.write_edge_geometry_file("/tmp/WA_EdgeGeometry.txt");
 	f.close();
 	return 0;
 }

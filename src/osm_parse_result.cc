@@ -192,7 +192,6 @@ int osm_parse_result::write_edge_geometry_file(const char *fn, const char delim)
 	std::ofstream f(fn, std::ios_base::out);
 	std::map<size_t, std::string>::const_iterator a_iter;
 	std::map< size_t, std::vector<size_t> >::const_iterator w_iter;
-	std::map< size_t, std::map<size_t, size_t> >::const_iterator wi_iter;
 	std::map< size_t, std::pair<double, double> >::const_iterator n_iter;
 	if (!f.is_open()){
 		std::cerr<<"Error opening "<<fn<<" for writing\n";
@@ -200,12 +199,11 @@ int osm_parse_result::write_edge_geometry_file(const char *fn, const char delim)
 	}
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
 		c_n = ((a_iter = w_n.find(iter -> first)) == w_n.end()) ? "" : a_iter -> second;
-		c_t = ((a_iter = w_t.find(iter -> first)) == w_n.end()) ? T_UNCLASSIFIED : a_iter -> second;
+		c_t = ((a_iter = w_t.find(iter -> first)) == w_t.end()) ? T_UNCLASSIFIED : a_iter -> second;
 		f<<e_id<<delim<<c_n<<delim<<c_t<<delim<<get_edge_len(iter -> first, iter -> second.first, iter -> second.second); 
 		w_iter = w.find(iter -> first);
-		wi_iter = wi.find(iter -> first);
-		s_i = wi_iter -> second.find(iter -> second.first) -> second;
-		e_i = wi_iter -> second.find(iter -> second.second) -> second;
+		s_i = wi.find(iter -> second.first) -> second.find(iter -> first) -> second;
+		e_i = wi.find(iter -> second.second) -> second.find(iter -> first) -> second;
 		for (size_t i = s_i; i <= e_i; ++i){ 
 			n_iter = n.find(w_iter -> second[i]);
 			f<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;

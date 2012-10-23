@@ -8,7 +8,7 @@
 #include "osm_xml.h"
 
 void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t &offset, std::ifstream &f, osm_parse_result &res){ 
-	char c[2], attr[MAX_TL], *s, *e;
+	char c[2], attr[MAX_TL], *s, *e, *attr_n;
 	long n_id, w_id = 0;
 	double lon, lat; 
 	do{
@@ -43,12 +43,13 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					res.insert_way_ref(n_id, w_id);
 				}else if(w_id && !strncmp(tag_name, T_ATTR, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
-					if (!strncmp(get_attr_substr(attr), T_NAME, T_MAX_LEN)){  
+					attr_n = get_attr_str(attr);
+					if (!strncmp(attr_n, T_NAME, T_MAX_LEN)){  
 						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
-						res.insert_way_name(w_id, get_attr_substr(attr));
-					}else if (!strncmp(get_attr_substr(attr), T_TYPE, T_MAX_LEN)){  
+						res.insert_way_name(w_id, get_attr_str(attr));
+					}else if (!strncmp(attr_n, T_TYPE, T_MAX_LEN)){  
 						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
-						res.insert_way_type(w_id, get_attr_substr(attr));
+						res.insert_way_type(w_id, get_attr_str(attr));
 					}
 				}
 				update_buffer(buffer, buffer_size, e - buffer, offset, f);
@@ -88,7 +89,7 @@ void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char 
 	circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
 }
 
-char *get_attr_substr(char *attr){   //note: the source attribute may contain space in it
+char *get_attr_str(char *attr){   //note: the source attribute may contain space in it
 	char *s = strchr(attr, '"'), *e = strchr(++s, '"');
 	if (e){
 		*e = '\0';
