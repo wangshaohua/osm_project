@@ -11,11 +11,15 @@
 #define DEFAULT_BUFFER_SIZE 4096   //4k: the default filesystem block size on most *NIX systems
 #define MAX_TL 256   //assuming no XML element name contains more than 32 characters 
 #define MAX_OUTPUT_LINE_LEN 256
-#define W_TYPE "highway"   //attribute name for the type of the way 
-#define W_TYPE_LEN 8   //attribute name for the type of the way 
+#define T_MAX_LEN 16   //max length of the name of a tag
+#define T_NODE "node"  //tag name for definition of a node
+#define T_ND "nd"    //tag name for reference of a node
+#define T_WAY "way"    //tag name for definition of a way
+#define T_ATTR "tag"   //tag name for attribute of a node or a way
+#define T_TYPE "highway"   //attribute tag name for type of a way 
+#define T_NAME "name"   //attribute tag name  for name of a way
 
 #include <stdlib.h>
-#include <iostream>
 #include <sstream>
 #include "circ_buff.h"
 #include "osm_parse_result.h"

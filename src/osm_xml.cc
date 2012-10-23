@@ -25,9 +25,8 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					std::cerr<<"Error: XML tag name contains too many characters\n";
 					exit(-1);
 				}
-
 				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-				if (!strcmp(tag_name, "node")){
+				if (!strncmp(tag_name, T_NODE, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
 					n_id = get_attr_val<long>(attr);
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lat
@@ -35,21 +34,23 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lon
 					lon = get_attr_val<double>(attr);
 					res.insert_node_ref(n_id, lat, lon);
-				}else if (!strcmp(tag_name, "way")){
+				}else if (!strncmp(tag_name, T_WAY, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //way id
 					w_id = get_attr_val<long>(attr);
-				}else if (!strcmp(tag_name, "nd")){
+				}else if (!strncmp(tag_name, T_ND, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //nd ref id
 					n_id = get_attr_val<long>(attr);
 					res.insert_way_ref(n_id, w_id);
-				}else if(w_id && !strcmp(tag_name, "tag")){
+				}else if(w_id && !strncmp(tag_name, T_ATTR, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
-					if (!strncmp(get_attr_substr(attr), W_TYPE, W_TYPE_LEN)){  
+					if (!strncmp(get_attr_substr(attr), T_NAME, T_MAX_LEN)){  
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+						res.insert_way_name(w_id, get_attr_substr(attr));
+					}else if (!strncmp(get_attr_substr(attr), T_TYPE, T_MAX_LEN)){  
 						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
 						res.insert_way_type(w_id, get_attr_substr(attr));
 					}
 				}
-
 				update_buffer(buffer, buffer_size, e - buffer, offset, f);
 			}
 			while (!(s = circ_str_chr(buffer, buffer_size, offset, '>'))){

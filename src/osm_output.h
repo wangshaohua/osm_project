@@ -1,8 +1,6 @@
 #ifndef OSM_OUTPUT_H
 #define OSM_OUTPUT_H
 
-#include <iostream>
-#include <fstream>
 #include "osm_parse_result.h"
 
 #define DEFAULT_NODES_FILE "../doc/output/WA_Nodes.txt"

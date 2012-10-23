@@ -22,13 +22,13 @@ int main(int argc, char *argv[]){
 	tag_name[MAX_TL] = '\0';
 	std::ifstream f(argv[1], std::ios_base::in);
 	if (!f.is_open()){
-		std::cerr<<"Error opening input file\n";
+		std::cerr<<"Error opening "<<argv[1]<<" for reading\n";
 		exit(1);
 	}
 	f.read(buffer, DEFAULT_BUFFER_SIZE);
 	read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f, res);
-std::cout<<"# of vert(ices): "<<res.get_vertex_set().size()<<"\n";
-std::cout<<"# of edge(s): "<<res.get_edge_set().size()<<"\n";
+std::cout<<"# of vert(ices): "<<res.get_vertex_set().size()<<'\n';
+std::cout<<"# of edge(s): "<<res.get_edge_set().size()<<'\n';
 std::cout<<"vert(ices):\n";
 for (std::set<size_t>::iterator v_iter = res.get_vertex_set().begin(); v_iter != res.get_vertex_set().end(); ++v_iter){
 std::cout<<*v_iter<<", ";
@@ -37,6 +37,7 @@ std::cout<<"\nedge(s):\n";
 for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::iterator e_iter = res.get_edge_set().begin(); e_iter != res.get_edge_set().end(); ++e_iter){
 std::cout<<"< "<<e_iter -> first<<", ("<<e_iter -> second.first<<", "<<e_iter -> second.second<<") >, ";
 }
-std::cout<<"\n";
+std::cout<<'\n';
+	f.close();
 	return 0;
 }
