@@ -6,7 +6,7 @@
 
 #include "osm_parse_result.h"
 
-long osm_parse_result::find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{   //find vertex in current way that is the immediate predecessor to the node at current index
+ssize_t osm_parse_result::find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{   //find vertex in current way that is the immediate predecessor to the node at current index
 	size_t min = 0, max, c, c_i;		
 	if (c_wv -> empty() || (*c_wv)[0].first >= index){
 		return -1;              //no immediate predecessor exists
@@ -23,7 +23,7 @@ long osm_parse_result::find_immediate_predecessor(const std::vector< std::pair<s
 	return min;   //max is -1 if current way contains only 1 vertex
 }
 
-long osm_parse_result::find_immediate_successor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{ //find vertex in current way that is the immediate successor to the node at current index
+ssize_t osm_parse_result::find_immediate_successor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{ //find vertex in current way that is the immediate successor to the node at current index
 	size_t min = 0, max, c, c_i;		
 	if (c_wv -> empty()){ 
 		return -1;
@@ -49,7 +49,7 @@ void osm_parse_result::insert_node_ref(const size_t n_id, const double lat, cons
 
 void osm_parse_result::insert_way_ref(const size_t n_id, const size_t way_id){
 	size_t l_id, _way_id, n_ind, _n_ind, n_v, pn, sn;
-	long p_n_v, s_n_v = -1;
+	ssize_t p_n_v, s_n_v = -1;
 	double lat, lon, l_lon, l_lat, dx, dy;
 	std::pair<double, double> *nd, *l_nd; 
 	std::vector<size_t> *c_w = &(w[way_id]);

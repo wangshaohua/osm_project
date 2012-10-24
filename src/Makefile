@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-g -c -Wall -O3
+CFLAGS=-c -Wall -O3
 LDFLAGS=
 OSM_PARSER=circ_buff.o osm_parse_result.o osm_xml.o osm_parser.o
 CIRC_BUFF_TEST=circ_buff.o circ_buff_test.o
