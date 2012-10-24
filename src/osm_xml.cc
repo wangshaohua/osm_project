@@ -26,7 +26,7 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					exit(-1);
 				}
 				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
-				if (!strncmp(tag_name, T_NODE, T_MAX_LEN)){
+				if (!strcmp(tag_name, T_NODE)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
 					n_id = get_attr_val<size_t>(attr);
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lat
@@ -34,22 +34,27 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lon
 					lon = get_attr_val<double>(attr);
 					res.insert_node_ref(n_id, lat, lon);
-				}else if (!strncmp(tag_name, T_WAY, T_MAX_LEN)){
+				}else if (!strcmp(tag_name, T_WAY)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //way id
 					w_id = get_attr_val<size_t>(attr);
-				}else if (!strncmp(tag_name, T_ND, T_MAX_LEN)){
+				}else if (!strcmp(tag_name, T_ND)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //nd ref id
 					n_id = get_attr_val<size_t>(attr);
 					res.insert_way_ref(n_id, w_id);
-				}else if(w_id && !strncmp(tag_name, T_ATTR, T_MAX_LEN)){
+				}else if(w_id && !strcmp(tag_name, T_ATTR)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
 					attr_n = get_attr_str(attr);
-					if (!strncmp(attr_n, T_NAME, T_MAX_LEN)){  
+					if (!strcmp(attr_n, T_NAME)){  
 						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
 						res.insert_way_name(w_id, get_attr_str(attr));
-					}else if (!strncmp(attr_n, T_TYPE, T_MAX_LEN)){  
+					}else if (!strcmp(attr_n, T_TYPE)){ 
 						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
 						res.insert_way_type(w_id, get_attr_str(attr));
+					}else if (!strcmp(attr_n, T_ONEWAY)){ 
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+						if (!strcmp(get_attr_str(attr), T_YES)){
+							res.insert_oneway(w_id);
+						}
 					}
 				}
 				update_buffer(buffer, buffer_size, e - buffer, offset, f);

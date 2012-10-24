@@ -28,7 +28,7 @@ class osm_parse_result{
 		std::map< size_t, std::map<size_t, size_t> > wi;  //map from node id to the map of way id and index of node on that way   
 		std::map< size_t, std::map<size_t, double> > wl;    //map from way id to estimated total length of the way
 		std::map< size_t, std::vector< std::pair<size_t, size_t> > > wv;  //map from way id to list of vertices contained in that way 
-		std::set<size_t> v;    //the list of vertices in the abstracted version of the map
+		std::set<size_t> v, o_w;    //the list of vertices in the abstracted version of the map, list of one-way streets in map
 		std::set< std::pair< size_t, std::pair<size_t, size_t> > > e;    //the set of edges in the abstracted version of the map
 		std::map<size_t, std::string> w_t, w_n;  //map from way id to name of the way (if any) and map from way id to type of the way (if any)
 		ssize_t find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *, const size_t) const;
@@ -41,6 +41,7 @@ class osm_parse_result{
 		void insert_end_pts(void);
 		void insert_way_name(const size_t, const char *);
 		void insert_way_type(const size_t, const char *);
+		void insert_oneway(const size_t);
 		double get_edge_len(const size_t, const size_t, const size_t) const;  
 		double get_edge_cost(const size_t, const size_t, const size_t) const;  
 		const std::set<size_t>& get_vertex_set(void) const{

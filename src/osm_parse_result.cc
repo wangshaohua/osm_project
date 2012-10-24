@@ -134,6 +134,10 @@ void osm_parse_result::insert_way_type(const size_t w_id, const char *type){
 	w_t[w_id] = std::string(type);
 }
 
+void osm_parse_result::insert_oneway(const size_t w_id){
+	o_w.insert(w_id);
+}
+
 double osm_parse_result::get_edge_len(const size_t way_id, const size_t p, const size_t q) const{
 	const std::map<size_t, double> *c_wl = &(wl.find(way_id) -> second);
 	return fabs(c_wl -> find(q) -> second - c_wl -> find(p) -> second);
