@@ -9,7 +9,7 @@
 
 void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t &offset, std::ifstream &f, osm_parse_result &res){ 
 	char c[2], attr[MAX_TL], *s, *e, *attr_n;
-	long n_id, w_id = 0;
+	size_t n_id, w_id = 0;
 	double lon, lat; 
 	do{
 		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
@@ -28,7 +28,7 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
 				if (!strncmp(tag_name, T_NODE, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
-					n_id = get_attr_val<long>(attr);
+					n_id = get_attr_val<size_t>(attr);
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lat
 					lat = get_attr_val<double>(attr);
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lon
@@ -36,10 +36,10 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 					res.insert_node_ref(n_id, lat, lon);
 				}else if (!strncmp(tag_name, T_WAY, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //way id
-					w_id = get_attr_val<long>(attr);
+					w_id = get_attr_val<size_t>(attr);
 				}else if (!strncmp(tag_name, T_ND, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //nd ref id
-					n_id = get_attr_val<long>(attr);
+					n_id = get_attr_val<size_t>(attr);
 					res.insert_way_ref(n_id, w_id);
 				}else if(w_id && !strncmp(tag_name, T_ATTR, T_MAX_LEN)){
 					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
