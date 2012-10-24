@@ -35,6 +35,22 @@ bool osm_output::open_edges_file(const char *file_path) {
         return false;
 }
 
+void osm_output::osm_write_node(const long id, const double lat, const double lon) {
+    if (fp_nodes.is_open()) {
+        fp_nodes << id << " " << lat << " " << lon << "\n";
+    } else {
+        std::cout << "Error: Nodes output file is not opened!\n";
+    }
+}
+
+void osm_output::osm_write_edge(const long id, const long start_id, const long end_id, const int cost) {
+    if (fp_edges.is_open()) {
+        fp_edges << id << " " << start_id << " " << end_id << " " << cost << "\n";
+    } else {
+        std::cout << "Error: Edges output file is not opened!\n";
+    }
+}
+
 int osm_output::osm_write(const osm_parse_result & res, const char *edge_fn, const char *vertex_fn){
 	
 	return 0;

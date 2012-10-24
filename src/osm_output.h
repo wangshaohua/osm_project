@@ -22,6 +22,8 @@ class osm_output {
     public:
         osm_output(const char *, const char *);
         ~osm_output(void);
+        void osm_write_node(const long, const double, const double);
+        void osm_write_edge(const long, const long, const long, const int);
         int osm_write(const osm_parse_result &, const char *, const char *);
 };
 
