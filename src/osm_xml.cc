@@ -55,6 +55,9 @@ void read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, s
 						if (!strcmp(get_attr_str(attr), T_YES)){
 							res.insert_oneway(w_id);
 						}
+					}else if (!strcmp(attr_n, T_MAXSPEED)){ 
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+						res.insert_maxspeed(w_id, get_attr_num<double>(attr));
 					}
 				}
 				update_buffer(buffer, buffer_size, e - buffer, offset, f);

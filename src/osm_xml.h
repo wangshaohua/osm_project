@@ -18,6 +18,7 @@
 #define T_TYPE "highway"   //attribute tag name for type of a way 
 #define T_NAME "name"   //attribute tag name  for name of a way
 #define T_ONEWAY "oneway"
+#define T_MAXSPEED "maxspeed"
 #define T_YES "yes"
 
 #include <stdlib.h>
@@ -28,12 +29,26 @@
 void read_osm_xml_elem(char *, const size_t, char *, size_t &, std::ifstream &, osm_parse_result &);
 void read_osm_xml_attr(char *, char *, const size_t, char *&, char *&, size_t &, std::ifstream &);
 char *get_attr_str(char *);
+char *get_attr_num(char *);
 
 template <typename T> T get_attr_val(char *attr){   //this is assuming all attributes are delimited by double quotes
 	char *s = strchr(attr, '"');
 	std::stringstream ss(std::stringstream::in | std::stringstream::out);
 	T val;
 	*(strchr(++s, '"')) = '\0';
+	ss<<s;
+	ss>>val;
+	return val;
+}
+
+template <typename T> T get_attr_num(char *attr){   //this is assuming all attributes are delimited by double quotes
+	char *s = strchr(attr, '"') + 1, *e = s;
+	std::stringstream ss(std::stringstream::in | std::stringstream::out);
+	T val;
+	while (*e && *e >= '0' && *e <= '9'){
+		++e;
+	}
+	*e = '\0';
 	ss<<s;
 	ss>>val;
 	return val;

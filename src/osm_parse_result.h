@@ -32,6 +32,7 @@ class osm_parse_result{
 		std::set<size_t> v, o_w;    //the list of vertices in the abstracted version of the map, list of one-way streets in map
 		std::set< std::pair< size_t, std::pair<size_t, size_t> > > e;    //the set of edges in the abstracted version of the map
 		std::map<size_t, std::string> w_t, w_n;  //map from way id to name of the way (if any) and map from way id to type of the way (if any)
+		std::map<size_t, double> w_ms;  //map from way id to max speed
 		ssize_t find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *, const size_t) const;
 		ssize_t find_immediate_successor(const std::vector< std::pair<size_t, size_t> > *, const size_t) const;
 	public:
@@ -42,6 +43,7 @@ class osm_parse_result{
 		void insert_end_pts(void);
 		void insert_way_name(const size_t, const char *);
 		void insert_way_type(const size_t, const char *);
+		void insert_maxspeed(const size_t, const double);
 		void insert_oneway(const size_t);
 		double get_edge_len(const size_t, const size_t, const size_t) const;  
 		double get_edge_cost(const size_t, const size_t, const size_t) const;  

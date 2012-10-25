@@ -134,6 +134,10 @@ void osm_parse_result::insert_way_type(const size_t w_id, const char *type){
 	w_t[w_id] = std::string(type);
 }
 
+void osm_parse_result::insert_maxspeed(const size_t w_id, const double ms){
+	w_ms[w_id] = ms;
+}
+
 void osm_parse_result::insert_oneway(const size_t w_id){
 	o_w.insert(w_id);
 }
