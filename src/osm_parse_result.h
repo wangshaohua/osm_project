@@ -11,6 +11,7 @@
 #define T_UNCLASSIFIED "unclassified"    //type of a way says "unclassified" if the type is not given in the input file 
 #define DEFAULT_DELIM ' '   //default delimiter for all other output files
 #define DEFAULT_GEOMETRY_DELIM '^'   //default delimiter for the geometry output file
+#define INF 1e37   //cost of traversing an one-way edge in the opposite direction 
 
 #include <map>
 #include <vector>

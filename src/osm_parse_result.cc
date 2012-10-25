@@ -145,7 +145,7 @@ double osm_parse_result::get_edge_len(const size_t way_id, const size_t p, const
 }
 
 double osm_parse_result::get_edge_cost(const size_t way_id, const size_t p, const size_t q) const{   //for now edge cost is the same as edge length
-	return get_edge_len(way_id, p, q);
+	return o_w.find(way_id) == o_w.end() ? get_edge_len(way_id, p, q) : wi.find(p) -> second.find(way_id) -> second <= wi.find(q) -> second.find(way_id) -> second ? get_edge_len(way_id, p, q) : INF; 
 }
 
 int osm_parse_result::write_node_file(const char *fn, const char delim) const{
