@@ -279,14 +279,19 @@ int osm_parse_result::write_vertex_file(const char *fn, const char delim) const{
 }
 
 int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
-	size_t e_id = 0;
+	size_t e_id = 0, bp, ep;
 	std::ofstream f(fn, std::ios_base::out);
 	if (!f.is_open()){
 		std::cerr<<"Error opening "<<fn<<" for writing"<<std::endl;
 		return -1;
 	}
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
-		f<<e_id<<delim<<iter -> second.first<<delim<<iter -> second.second<<'\n';
+		bp = iter -> second.first;
+		ep = iter -> second.second;
+		f<<e_id<<delim<<bp<<delim<<ep<<'\n';
+		if (o_w.find(iter -> first) == o_w.end()){
+			f<<++e_id<<delim<<ep<<delim<<bp<<'\n';
+		}
 	}
 	f.close();
 	return 0;
@@ -294,6 +299,7 @@ int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
 
 int osm_parse_result::write_edge_geometry_file(const char *fn, const char delim) const{
 	size_t e_id = 0, s_i, e_i;
+	double e_l;
 	std::string c_n, c_t;
 	std::ofstream f(fn, std::ios_base::out);
 	std::map<size_t, std::string>::const_iterator a_iter;
@@ -306,12 +312,23 @@ int osm_parse_result::write_edge_geometry_file(const char *fn, const char delim)
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
 		c_n = ((a_iter = w_n.find(iter -> first)) == w_n.end()) ? "" : a_iter -> second;
 		c_t = ((a_iter = w_t.find(iter -> first)) == w_t.end()) ? T_UNCLASSIFIED : a_iter -> second;
-		f<<e_id<<delim<<c_n<<delim<<c_t<<delim<<get_edge_len(iter -> first, iter -> second.first, iter -> second.second); 
+		e_l = get_edge_len(iter -> first, iter -> second.first, iter -> second.second);
+		f<<e_id<<delim<<c_n<<delim<<c_t<<delim<<e_l; 
 		w_iter = w.find(iter -> first);
 		s_i = wi.find(iter -> second.first) -> second.find(iter -> first) -> second;
 		e_i = wi.find(iter -> second.second) -> second.find(iter -> first) -> second;
 		for (size_t i = s_i; i <= e_i; ++i){ 
 			n_iter = n.find(w_iter -> second[i]);
+			f<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
+		}
+		f<<'\n';
+		if (o_w.find(iter -> first) == o_w.end()){
+			f<<++e_id<<delim<<c_n<<delim<<c_t<<delim<<e_l; 
+			for (size_t i = e_i; i > s_i; --i){        //this is in case of s_i == 0 
+				n_iter = n.find(w_iter -> second[i]);
+				f<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
+			}
+			n_iter = n.find(w_iter -> second[s_i]);
 			f<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
 		}
 		f<<'\n';
