@@ -6,30 +6,27 @@
  */
 
 #include "circ_buff.h"
-
-//note: for debugging purpose only
-
 #include <stdlib.h>
 
 char *circ_str_chr(char *buffer, const size_t buffer_size, const size_t offset, const int c){   //locate the first occurance of a character in a circular buffer
 	char *p, *s, *e = buffer + buffer_size;
 	p = s = buffer + offset;
 	while (p < e){
-		if (*p == -1){
-			return NULL;
-		}
 		if (*p == c){
 			return p;
+		}
+		if (*p == -1){
+			return NULL;
 		}
 		++p;
 	}
 	p = buffer;
 	while (p < s){
-		if (*p == -1){
-			return NULL;
-		}
 		if (*p == c){
 			return p;
+		}
+		if (*p == -1){
+			return NULL;
 		}
 		++p;
 	}
@@ -83,8 +80,8 @@ size_t update_buffer(char *buffer, const size_t buffer_size, const size_t curren
 		}else{
 			f.read(buffer + offset, current_pos - offset + 1);
 		}
-	}else{		
-		buffer[offset] = -1;   //EOF
+	}else{
+		buffer[offset] = -1;
 	}
 	return offset = (current_pos + 1) % buffer_size;
 }

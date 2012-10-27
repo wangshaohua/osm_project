@@ -6,7 +6,105 @@
 
 #include "osm_parse_result.h"
 
-long osm_parse_result::find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{   //find vertex in current way that is the immediate predecessor to the node at current index
+osm_parse_result::osm_parse_result(const char *fn){
+	char buffer[DEFAULT_BUFFER_SIZE + 1];
+	char tag_name[MAX_TL + 1];
+	size_t offset = 0;
+	buffer[DEFAULT_BUFFER_SIZE] = '\0';
+	tag_name[MAX_TL] = '\0';
+	std::ifstream f(fn, std::ios_base::in);
+	if (!f.is_open()){
+		std::cerr<<"Error opening "<<fn<<" for reading"<<std::endl;
+		exit(1);
+	}
+	f.read(buffer, DEFAULT_BUFFER_SIZE);
+	read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f);
+std::cout<<"# of vert(ices): "<<get_vertex_set().size()<<'\n';
+std::cout<<"# of edge(s): "<<get_edge_set().size()<<'\n';
+/*
+std::cout<<"vert(ices):\n";
+for (std::set<size_t>::iterator v_iter = get_vertex_set().begin(); v_iter != get_vertex_set().end(); ++v_iter){
+std::cout<<*v_iter<<", ";
+}
+std::cout<<"\nedge(s):\n";
+for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::iterator e_iter = get_edge_set().begin(); e_iter != get_edge_set().end(); ++e_iter){
+std::cout<<"< "<<e_iter -> first<<", ("<<e_iter -> second.first<<", "<<e_iter -> second.second<<") >, ";
+}
+#std::cout<<'\n';
+*/
+write_node_file("/tmp/WA_Nodes.txt");
+write_vertex_file("/tmp/WA_Vertices.txt");
+write_edge_file("/tmp/WA_Edges.txt");
+write_edge_geometry_file("/tmp/WA_EdgeGeometry.txt");
+	f.close();
+}
+
+void osm_parse_result::read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t &offset, std::ifstream &f){ 
+	char c[2], attr[MAX_TL], *s, *e, *attr_n;
+	size_t n_id, w_id = 0;
+	double lon, lat; 
+	do{
+		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
+			offset = 0;
+			f.read(buffer, buffer_size);
+		}
+		while (s){
+			update_buffer(buffer, buffer_size, s - buffer, offset, f);
+			circ_strncpy(c, buffer, buffer_size, offset, 0, 1);	
+			if (c[0] != '/'){
+				if (!(e = circ_str_chr(buffer, buffer_size, offset, ' ')) || circ_len(buffer_size, offset, offset, e - buffer) > MAX_TL){
+					std::cerr<<"Error: XML tag name contains too many characters"<<std::endl;
+					exit(-1);
+				}
+				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+				if (!strcmp(tag_name, T_NODE)){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node id
+					n_id = get_attr_val<size_t>(attr);
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lat
+					lat = get_attr_val<double>(attr);
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //node lon
+					lon = get_attr_val<double>(attr);
+					insert_node_ref(n_id, lat, lon);
+				}else if (!strcmp(tag_name, T_WAY)){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //way id
+					w_id = get_attr_val<size_t>(attr);
+				}else if (!strcmp(tag_name, T_ND)){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);  //nd ref id
+					n_id = get_attr_val<size_t>(attr);
+					insert_way_ref(n_id, w_id);
+				}else if(w_id && !strcmp(tag_name, T_ATTR)){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+					attr_n = get_attr_str(attr);
+					if (!strcmp(attr_n, T_NAME)){  
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+						insert_way_name(w_id, get_attr_str(attr));
+					}else if (!strcmp(attr_n, T_TYPE)){ 
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+						insert_way_type(w_id, get_attr_str(attr));
+					}else if (!strcmp(attr_n, T_ONEWAY)){ 
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+						if (!strcmp(get_attr_str(attr), T_YES)){
+							insert_oneway(w_id);
+						}
+					}else if (!strcmp(attr_n, T_MAXSPEED)){ 
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f);
+						insert_maxspeed(w_id, get_attr_num<double>(attr));
+					}
+				}
+				update_buffer(buffer, buffer_size, e - buffer, offset, f);
+			}
+			while (!(s = circ_str_chr(buffer, buffer_size, offset, '>'))){
+				offset = 0;
+				f.read(buffer, buffer_size);
+			}
+			update_buffer(buffer, buffer_size, s - buffer, offset, f);
+			s = circ_str_chr(buffer, buffer_size, offset, '<');
+		}
+	}while (!f.eof());
+	insert_end_pts();
+}
+
+ssize_t osm_parse_result::find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{   //find vertex in current way that is the immediate predecessor to the node at current index
 	size_t min = 0, max, c, c_i;		
 	if (c_wv -> empty() || (*c_wv)[0].first >= index){
 		return -1;              //no immediate predecessor exists
@@ -23,7 +121,7 @@ long osm_parse_result::find_immediate_predecessor(const std::vector< std::pair<s
 	return min;   //max is -1 if current way contains only 1 vertex
 }
 
-long osm_parse_result::find_immediate_successor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{ //find vertex in current way that is the immediate successor to the node at current index
+ssize_t osm_parse_result::find_immediate_successor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{ //find vertex in current way that is the immediate successor to the node at current index
 	size_t min = 0, max, c, c_i;		
 	if (c_wv -> empty()){ 
 		return -1;
@@ -49,7 +147,7 @@ void osm_parse_result::insert_node_ref(const size_t n_id, const double lat, cons
 
 void osm_parse_result::insert_way_ref(const size_t n_id, const size_t way_id){
 	size_t l_id, _way_id, n_ind, _n_ind, n_v, pn, sn;
-	long p_n_v, s_n_v = -1;
+	ssize_t p_n_v, s_n_v = -1;
 	double lat, lon, l_lon, l_lat, dx, dy;
 	std::pair<double, double> *nd, *l_nd; 
 	std::vector<size_t> *c_w = &(w[way_id]);
@@ -134,6 +232,14 @@ void osm_parse_result::insert_way_type(const size_t w_id, const char *type){
 	w_t[w_id] = std::string(type);
 }
 
+void osm_parse_result::insert_maxspeed(const size_t w_id, const double ms){
+	w_ms[w_id] = ms;
+}
+
+void osm_parse_result::insert_oneway(const size_t w_id){
+	o_w.insert(w_id);
+}
+
 double osm_parse_result::get_edge_len(const size_t way_id, const size_t p, const size_t q) const{
 	const std::map<size_t, double> *c_wl = &(wl.find(way_id) -> second);
 	return fabs(c_wl -> find(q) -> second - c_wl -> find(p) -> second);
@@ -141,13 +247,13 @@ double osm_parse_result::get_edge_len(const size_t way_id, const size_t p, const
 }
 
 double osm_parse_result::get_edge_cost(const size_t way_id, const size_t p, const size_t q) const{   //for now edge cost is the same as edge length
-	return get_edge_len(way_id, p, q);
+	return o_w.find(way_id) == o_w.end() ? get_edge_len(way_id, p, q) : wi.find(p) -> second.find(way_id) -> second <= wi.find(q) -> second.find(way_id) -> second ? get_edge_len(way_id, p, q) : INF; 
 }
 
 int osm_parse_result::write_node_file(const char *fn, const char delim) const{
 	std::ofstream f(fn, std::ios_base::out);
 	if (!f.is_open()){
-		std::cerr<<"Error opening "<<fn<<" for writing\n";
+		std::cerr<<"Error opening "<<fn<<" for writing"<<std::endl;
 		return -1;
 	}
 	for (std::map< size_t, std::pair<double, double> >::const_iterator iter = n.begin(); iter != n.end(); ++iter){
@@ -161,7 +267,7 @@ int osm_parse_result::write_vertex_file(const char *fn, const char delim) const{
 	std::ofstream f(fn, std::ios_base::out);
 	std::map< size_t, std::pair<double, double> >::const_iterator c_v; 
 	if (!f.is_open()){
-		std::cerr<<"Error opening "<<fn<<" for writing\n";
+		std::cerr<<"Error opening "<<fn<<" for writing"<<std::endl;
 		return -1;
 	}
 	for (std::set< size_t >::const_iterator iter = v.begin(); iter != v.end(); ++iter){
@@ -173,14 +279,19 @@ int osm_parse_result::write_vertex_file(const char *fn, const char delim) const{
 }
 
 int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
-	size_t e_id = 0;
+	size_t e_id = 0, bp, ep;
 	std::ofstream f(fn, std::ios_base::out);
 	if (!f.is_open()){
-		std::cerr<<"Error opening "<<fn<<" for writing\n";
+		std::cerr<<"Error opening "<<fn<<" for writing"<<std::endl;
 		return -1;
 	}
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
-		f<<e_id<<delim<<iter -> second.first<<delim<<iter -> second.second<<'\n';
+		bp = iter -> second.first;
+		ep = iter -> second.second;
+		f<<e_id<<delim<<bp<<delim<<ep<<'\n';
+		if (o_w.find(iter -> first) == o_w.end()){
+			f<<++e_id<<delim<<ep<<delim<<bp<<'\n';
+		}
 	}
 	f.close();
 	return 0;
@@ -188,19 +299,21 @@ int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
 
 int osm_parse_result::write_edge_geometry_file(const char *fn, const char delim) const{
 	size_t e_id = 0, s_i, e_i;
+	double e_l;
 	std::string c_n, c_t;
 	std::ofstream f(fn, std::ios_base::out);
 	std::map<size_t, std::string>::const_iterator a_iter;
 	std::map< size_t, std::vector<size_t> >::const_iterator w_iter;
 	std::map< size_t, std::pair<double, double> >::const_iterator n_iter;
 	if (!f.is_open()){
-		std::cerr<<"Error opening "<<fn<<" for writing\n";
+		std::cerr<<"Error opening "<<fn<<" for writing"<<std::endl;
 		return -1;
 	}
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
 		c_n = ((a_iter = w_n.find(iter -> first)) == w_n.end()) ? "" : a_iter -> second;
 		c_t = ((a_iter = w_t.find(iter -> first)) == w_t.end()) ? T_UNCLASSIFIED : a_iter -> second;
-		f<<e_id<<delim<<c_n<<delim<<c_t<<delim<<get_edge_len(iter -> first, iter -> second.first, iter -> second.second); 
+		e_l = get_edge_len(iter -> first, iter -> second.first, iter -> second.second);
+		f<<e_id<<delim<<c_n<<delim<<c_t<<delim<<e_l; 
 		w_iter = w.find(iter -> first);
 		s_i = wi.find(iter -> second.first) -> second.find(iter -> first) -> second;
 		e_i = wi.find(iter -> second.second) -> second.find(iter -> first) -> second;
@@ -209,7 +322,51 @@ int osm_parse_result::write_edge_geometry_file(const char *fn, const char delim)
 			f<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
 		}
 		f<<'\n';
+		if (o_w.find(iter -> first) == o_w.end()){
+			f<<++e_id<<delim<<c_n<<delim<<c_t<<delim<<e_l; 
+			for (size_t i = e_i; i > s_i; --i){        //this is in case of s_i == 0 
+				n_iter = n.find(w_iter -> second[i]);
+				f<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
+			}
+			n_iter = n.find(w_iter -> second[s_i]);
+			f<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
+		}
+		f<<'\n';
 	}
 	f.close();
 	return 0;
+}
+
+void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char *&s, char *&e, size_t & offset, std::ifstream & f){ 
+	char *es = NULL; 
+	update_buffer(buffer, buffer_size, e - buffer, offset, f);
+	s = e; 
+	e = circ_str_chr(buffer, buffer_size, offset, ' ');
+	es = circ_str_chr(buffer, buffer_size, offset, '/');
+	if (es){
+		if (!e || (es - buffer - offset + buffer_size) % buffer_size < (e - buffer - offset + buffer_size) % buffer_size){
+			e = es;
+		}
+	}
+	es = circ_str_chr(buffer, buffer_size, offset, '>');
+	if (es){
+		if (!e || (es - buffer - offset + buffer_size) % buffer_size < (e - buffer - offset + buffer_size) % buffer_size){
+			e = es;
+		}
+	}
+	if (!e || circ_len(buffer_size, offset, offset, e - buffer) > MAX_TL){
+		perror("Error: XML tag name contains too many characters\n");
+		exit(-1);
+	}
+	circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+}
+
+char *get_attr_str(char *attr){   //note: the source attribute may contain space in it
+	char *s = strchr(attr, '"'), *e = strchr(++s, '"');
+	if (e){
+		*e = '\0';
+	}else{
+		*s = '\0';
+	}
+	return s;	
 }
