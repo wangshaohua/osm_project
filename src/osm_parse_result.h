@@ -63,6 +63,9 @@ class osm_parse_result{
 		void insert_oneway(const size_t);
 		double get_edge_len(const size_t, const size_t, const size_t) const;  
 		double get_edge_cost(const size_t, const size_t, const size_t) const;  
+        double get_edge_speed(const size_t) const;
+        double get_edge_distance_km(const size_t, const size_t) const;
+        double get_edge_distance_mi(const size_t, const size_t) const;
 		const std::set<size_t>& get_vertex_set(void) const{
 			return v;
 		}

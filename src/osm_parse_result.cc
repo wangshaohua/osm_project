@@ -242,12 +242,41 @@ void osm_parse_result::insert_oneway(const size_t w_id){
 
 double osm_parse_result::get_edge_len(const size_t way_id, const size_t p, const size_t q) const{
 	const std::map<size_t, double> *c_wl = &(wl.find(way_id) -> second);
+	
 	return fabs(c_wl -> find(q) -> second - c_wl -> find(p) -> second);
-
 }
 
 double osm_parse_result::get_edge_cost(const size_t way_id, const size_t p, const size_t q) const{   //for now edge cost is the same as edge length
 	return o_w.find(way_id) == o_w.end() ? get_edge_len(way_id, p, q) : wi.find(p) -> second.find(way_id) -> second <= wi.find(q) -> second.find(way_id) -> second ? get_edge_len(way_id, p, q) : INF; 
+}
+
+double osm_parse_result::get_edge_speed(const size_t way_id) const {
+    return w_ms.find(way_id) -> second;
+}
+
+double osm_parse_result::get_edge_distance_km(const size_t p, const size_t q) const {
+    std::pair<double, double> start = n.find(p) -> second;
+    std::pair<double, double> end = n.find(q) -> second;
+    
+    double pi = atan(1.0) * 4.0;
+    double d2r = (pi / 180);
+    int earth_radius = 6371;
+    
+    double dLat = (end.first - start.first) * d2r;
+    double dLon = (end.second - start.second) * d2r;
+    double rLat1 = start.first * d2r;
+    double rLat2 = end.first * d2r;
+    
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(rLat1) * cos(rLat2) * sin(dLon / 2) * sin(dLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    //double dist = earth_radius * c; // in Kilometer
+    
+    return earth_radius * c;
+}
+
+double osm_parse_result::get_edge_distance_mi(const size_t p, const size_t q) const {
+    return get_edge_distance_km(p, q) * 0.621371;
 }
 
 int osm_parse_result::write_node_file(const char *fn, const char delim) const{
@@ -280,17 +309,22 @@ int osm_parse_result::write_vertex_file(const char *fn, const char delim) const{
 
 int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
 	size_t e_id = 0, bp, ep;
+    int ec;
+    double speed;
 	std::ofstream f(fn, std::ios_base::out);
 	if (!f.is_open()){
 		std::cerr<<"Error opening "<<fn<<" for writing"<<std::endl;
 		return -1;
 	}
+	
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
 		bp = iter -> second.first;
 		ep = iter -> second.second;
-		f<<e_id<<delim<<bp<<delim<<ep<<'\n';
+        speed = get_edge_speed(iter -> first);
+        ec = speed == 0 ? 0 : 3600 / (get_edge_speed(iter -> first) * get_edge_distance_mi(bp, ep));
+		f<<e_id<<delim<<bp<<delim<<ep<<delim<<ec<<'\n';
 		if (o_w.find(iter -> first) == o_w.end()){
-			f<<++e_id<<delim<<ep<<delim<<bp<<'\n';
+			f<<++e_id<<delim<<ep<<delim<<bp<<delim<<ec<<'\n';
 		}
 	}
 	f.close();
