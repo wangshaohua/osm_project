@@ -8,6 +8,48 @@
 #ifndef ALT_COST_H
 #define ALT_COST_H
 
+// Reference: http://wiki.openstreetmap.org/wiki/United_States_roads_tagging
+// All speed are in mph. These are just the minimum speed for all different roadway, and may or may not be the same as the actual speed limit, but they are close.
+#define MOTORWAY 60
+#define MOTORWAY_LINK 25
+#define TRUNK 50
+#define TRUNK_LINK 25
+#define PRIMARY 45
+#define PRIMARY_LINK 25
+#define SECONDARY 45 
+#define SECONDARY_LINK 25
+#define TERTIARY 35
+#define TERTIARY_LINK 25
+#define LIVING_STREET 25
+#define PEDESTRIAN 0
+#define RESIDENTIAL 25
+#define UNCLASSIFIED 10
+#define SERVICE 10
+#define TRACK 10
+#define BUS_GUIDEWAY 0
+#define RACEWAY 0
+#define ROAD 10
+
+#define H_MOTORWAY "motorway"
+#define H_MOTORWAY_LINK "motorway_link"
+#define H_TRUNK "trunk"
+#define H_TRUNK_LINK "trunk_link"
+#define H_PRIMARY "primary"
+#define H_PRIMARY_LINK "primary_link"
+#define H_SECONDARY "secondary"
+#define H_SECONDARY_LINK "secondary_link"
+#define H_TERTIARY "tertiary"
+#define H_TERTIARY_LINK "tertiary_link"
+#define H_LIVING_STREET "living_street"
+#define H_PEDESTRIAN "pedestrian"
+#define H_RESIDENTIAL "residential"
+#define H_UNCLASSIFIED "unclassified"
+#define H_SERVICE "service"
+#define H_TRACK "track"
+#define H_BUS_GUIDEWAY "bus_guideway"
+#define H_RACEWAY "raceway"
+#define H_ROAD "road"
+
 #define PI 3.14159265358979
 #define D2R 0.01745329251    //PI / 180, deg-to-rad conversion ratio
 #define EARTH_VOLUMETRIC_MEAN_RADIUS 6371.0    //physical constant needed for distance estimations on surface of earth (in SI unit) 

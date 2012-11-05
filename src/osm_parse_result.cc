@@ -253,7 +253,54 @@ double osm_parse_result::get_edge_cost(const size_t way_id, const size_t p, cons
 
 double osm_parse_result::get_edge_speed(const size_t way_id) const {
 	std::map<size_t, double>::const_iterator iter = w_ms.find(way_id);	
-	return iter == w_ms.end() ? DEFAULT_SPEED : iter -> second;
+	//return iter == w_ms.end() ? DEFAULT_SPEED : iter -> second;
+	return iter == w_ms.end() ? determine_unknown_speed(way_id) : iter -> second;
+}
+
+double osm_parse_result::determine_unknown_speed(const size_t way_id) const {
+    std::string way_type = w_t.find(way_id) -> second;
+
+    if (way_type == H_MOTORWAY)
+        return MOTORWAY;
+    else if (way_type == H_MOTORWAY_LINK)
+        return MOTORWAY_LINK;
+    else if (way_type == H_TRUNK)
+        return TRUNK;
+    else if (way_type == H_TRUNK_LINK)
+        return TRUNK_LINK;
+    else if (way_type == H_PRIMARY)
+        return PRIMARY;
+    else if (way_type == H_PRIMARY_LINK)
+        return PRIMARY_LINK;
+    else if (way_type == H_SECONDARY)
+        return SECONDARY;
+    else if (way_type == H_SECONDARY_LINK)
+        return SECONDARY_LINK;
+    else if (way_type == H_TERTIARY)
+        return TERTIARY;
+    else if (way_type == H_TERTIARY_LINK)
+        return TERTIARY_LINK;
+    else if (way_type == H_LIVING_STREET)
+        return LIVING_STREET;
+    else if (way_type == H_PEDESTRIAN)
+        return PEDESTRIAN;
+    else if (way_type == H_RESIDENTIAL)
+        return RESIDENTIAL;
+    else if (way_type == H_UNCLASSIFIED)
+        return UNCLASSIFIED;
+    else if (way_type == H_SERVICE)
+        return SERVICE;
+    else if (way_type == H_TRACK)
+        return TRACK;
+    else if (way_type == H_BUS_GUIDEWAY)
+        return BUS_GUIDEWAY;
+    else if (way_type == H_RACEWAY)
+        return RACEWAY;
+    else if (way_type == H_ROAD)
+        return ROAD;
+    else
+        return DEFAULT_SPEED;
+    
 }
 
 int osm_parse_result::write_node_file(const char *fn, const char delim) const{
