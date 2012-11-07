@@ -51,7 +51,7 @@ class osm_parse_result{
 		ssize_t find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *, const size_t) const;
 		ssize_t find_immediate_successor(const std::vector< std::pair<size_t, size_t> > *, const size_t) const;
 		void read_osm_xml_elem(char *, const size_t, char *, size_t &, std::ifstream &);
-        double determine_unknown_speed(const size_t) const;
+		double determine_unknown_speed(const size_t) const;
 	public:
 		osm_parse_result(const char *);
 		~osm_parse_result(void){};
