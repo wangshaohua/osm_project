@@ -28,11 +28,15 @@
 					var b = parseInt(e_str[i]);
 					++i;
 					var cost = parseFloat(e_str[i]);
+					var clr; 
 					i += 2;
-					viz.append("svg:line").attr("y1", (v_lat[a] - min_lat) / h * height).attr("y2", (v_lat[b] - min_lat) / h * height).attr("x1", (v_lon[a] - min_lon) / w * width).attr("x2", (v_lon[b] - min_lon) / w * width).style("stroke", "rgb(6,120,155)");
-
+					if (cost > 255.0){
+						clr = 255;
+					}else{
+						clr = Math.floor(256 * (1 - Math.exp(-cost / 10.0)));
+					}
+					viz.append("svg:line").attr("y1", (v_lat[a] - min_lat) / h * height).attr("y2", (v_lat[b] - min_lat) / h * height).attr("x1", (v_lon[a] - min_lon) / w * width).attr("x2", (v_lon[b] - min_lon) / w * width).style("stroke", "rgb(0, 0, " + clr.toString() + ")").style("stroke-width", 1);
 				}
-				//var myLine = viz.append("svg:line").attr("x1", 40).attr("y1", 50).attr("x2", 450).attr("y2", 150).style("stroke", "rgb(6,120,155)");
 			});
 		</script>
 	</head> 
