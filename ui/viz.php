@@ -35,7 +35,7 @@
 					}else{
 						clr = Math.floor(256 * (1 - Math.exp(-cost / 16.0)));
 					}
-					viz.append("svg:line").attr("y1", (v_lat[a] - min_lat) / h * height).attr("y2", (v_lat[b] - min_lat) / h * height).attr("x1", (v_lon[a] - min_lon) / w * width).attr("x2", (v_lon[b] - min_lon) / w * width).style("stroke", "rgb(" + (255 - clr).toString() + ", " + clr.toString() + ", 20)").style("stroke-width", .5);
+					viz.append("svg:line").attr("y1", height - (v_lat[a] - min_lat) / h * height).attr("y2", height - (v_lat[b] - min_lat) / h * height).attr("x1", (v_lon[a] - min_lon) / w * width).attr("x2", (v_lon[b] - min_lon) / w * width).style("stroke", "rgb(" + (255 - clr).toString() + ", " + clr.toString() + ", 20)").style("stroke-width", .5);
 				}
 			});
 		</script>
