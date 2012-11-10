@@ -1,0 +1,4 @@
+F:\2011 学习\课程设计 尚小卫\c#\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\ResolveAssemblyReference.cache
+F:\2011 学习\课程设计 尚小卫\c#\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form1.resources
+F:\2011 学习\课程设计 尚小卫\c#\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\GIS.Properties.Resources.resources
+F:\2011 学习\课程设计 尚小卫\c#\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.csproj.GenerateResource.Cache
