@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;//.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -45,12 +45,12 @@ namespace gis
             int scale = 500;
             for (int i = 0; i < length; ++i)
             {
-                g.DrawLine(mypen, (int)((startlat[i] - 45) * scale), (int)((startlong[i] + 123) * scale), (int)((endlat[i] - 45) * scale), (int)((endlong[i] + 123) * scale));
+                g.DrawLine(mypen, (int)((startlat[i] - 40) * scale), (int)((startlong[i] + 74) * scale), (int)((endlat[i] - 40) * scale), (int)((endlong[i] + 74) * scale));
                
             }
             for (int i = 0; i < nodelat.Length; ++i)
             {
-                g.DrawLine(mypen, (int)((nodelat[i] - 45) * scale), (int)((nodelong[i] + 123) * scale), (int)((nodelat[i] - 45) * scale), (int)((nodelong[i] + 123) * scale));
+                g.DrawLine(mypen, (int)((nodelat[i] - 40) * scale), (int)((nodelong[i] + 74) * scale), (int)((nodelat[i] - 40) * scale), (int)((nodelong[i] + 74) * scale));
             }
 
             g.DrawLine(mypen, new Point(10, 10), new Point(10, 10));
@@ -65,64 +65,68 @@ namespace gis
             //string line;
             //string[] s;
             //string temp;
-            FileStream fs = new FileStream("..\\..\\..\\..\\gis\\WA_Nodes.txt", FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream("C:\\Users\\mfc\\Desktop\\GIS2\\GIS\\WA_Vertices.txt", FileMode.Open, FileAccess.Read);
             StreamReader reader = new StreamReader(fs, Encoding.Default);
             reader.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
 
-            int line_number = 0;
+            long line_number = 0;
             while (reader.ReadLine() != null)
             {
                 line_number++;
             }
             nodelat = new double[line_number];
             nodelong = new double[line_number];
-            double[,] a = new double[line_number, 3];
+            //double[,] a = new double[line_number, 3];
+            Hashtable[] a = new Hashtable[2];
+            a[0] = new Hashtable();
+            a[1] = new Hashtable();
             reader.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
             for (int i = 0; i < line_number; i++)
             {
                 string line = reader.ReadLine();
                 string[] s = line.Split(' ');
-                for (int j = 0; j < 3; j++)
+                for (long j = 0; j < 2; j++)
                 {
-                    string temp = s[j];
-                    a[i, j] = double.Parse(temp);
+                    a[j][long.Parse(s[0])] = double.Parse(s[j + 1]);
                 }
-                textBox1.Text = a[1, 1].ToString();
+                //textBox1.Text = a[1, 1].ToString();
             }
-            FileStream fss = new FileStream("..\\..\\..\\..\\gis\\WA_Edges.txt", FileMode.Open, FileAccess.Read);
+            FileStream fss = new FileStream("C:\\Users\\mfc\\Desktop\\GIS2\\GIS\\WA_Edges.txt", FileMode.Open, FileAccess.Read);
             StreamReader readers = new StreamReader(fss, Encoding.Default);
             readers.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
 
-            int line_numbers = 0;
+            long line_numbers = 0;
             while (readers.ReadLine() != null)
             {
                 line_numbers++;
             }
-            int[,] b = new int[line_numbers, 4];
+            Hashtable[] b = new Hashtable[2];
+            b[0] = new Hashtable();
+            b[1] = new Hashtable();
+            
             startlong = new double[line_numbers];
             startlat = new double[line_numbers];
             endlong = new double[line_numbers];
             endlat = new double[line_numbers];
             readers.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
-            for (int i = 0; i < line_numbers; i++)
+            Console.WriteLine(line_numbers);
+            for (long i = 0; i < line_numbers; i++)
             {
                 string line = readers.ReadLine();
                 string[] s = line.Split(' ');
-                for (int j = 0; j < 4; j++)
-                {
-                    string temp = s[j];
-                    b[i, j] = int.Parse(temp);
-                }
+                //for (long j = 1; j < 3; j++)
+                //{
+                long n1 = long.Parse(s[1]), n2 = long.Parse(s[2]);
+                //double lat = (System.Double)a[0][n];
+                startlat[i] = (System.Double)a[0][n1];
+                startlong[i] = (System.Double)a[1][n1];
+                endlat[i] = (System.Double)a[0][n2];
+                endlong[i] = (System.Double)a[1][n2];
 
 
-                startlat[i] = a[b[i, 1], 1];
-                startlong[i] = a[b[i, 1], 2];
-                endlat[i] = a[b[i, 2], 1];
-                endlong[i] = a[b[i, 2], 2];
-
-
-                textBox1.Text = a[1, 1].ToString();
+                
             }
+            textBox1.Text = line_numbers.ToString();
             //myDrawLine();
 
             #endregion
