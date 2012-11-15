@@ -5,7 +5,7 @@
 		<script src="js/d3.v2.js"></script>
 		<script src="js/jquery-1.8.2.min.js"></script>
 		<script>
-			var max_lat = -90, min_lat = 90, max_lon = -180, min_lon = 180;
+			var SVG_WIDTH = 800, SVG_HEIGHT = 600, max_lat = -90, min_lat = 90, max_lon = -180, min_lon = 180, w, h, svg, point, line, v_lat = new Array(), v_lon = new Array();
 			$(document).ready(function(){
 				$("#loading").fadeIn(100);
 				$.ajax({
@@ -25,8 +25,9 @@
 					}
 				}).done(function ( data ){
 					$("#WA_Edges_data").html(data);
-					var width = 800, height = 600, w, h, i, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, cost, clr, viz = d3.select("#viz").append("svg:svg").attr("width", width).attr("height", height), v_str = $("#WA_Vertices_data").html().split(/[ \n]+/), e_str = $("#WA_Edges_data").html().split(/[ \n]+/), v_lat = new Array(), v_lon = new Array();
-					for (i = 0; i < v_str.length;){
+					var i, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, cost, clr, v_str = $("#WA_Vertices_data").html().split(/[ \n]+/), e_str = $("#WA_Edges_data").html().split(/[ \n]+/);
+					svg = d3.select("#svg").append("svg:svg").attr("width", SVG_WIDTH).attr("height", SVG_HEIGHT); 
+					for (i = 0; i < v_str.length - 1;){
 						str_id = v_str[i++]; str_lat = v_str[i++]; str_lon = v_str[i++];
 						id = parseInt(str_id); lat = parseFloat(str_lat); lon = parseFloat(str_lon);
 						v_lat[id] = lat; v_lon[id] = lon;	
@@ -58,11 +59,36 @@
 						}else{
 							clr = Math.floor(256 * (1 - Math.exp(-cost / 12.0)));
 						}
-						$("#WA_Edges").append("<option>(" + str_a + ", " + str_b + ")</option>");
-						viz.append("svg:line").attr("y1", height - (v_lat[a] - min_lat) / h * height).attr("y2", height - (v_lat[b] - min_lat) / h * height).attr("x1", (v_lon[a] - min_lon) / w * width).attr("x2", (v_lon[b] - min_lon) / w * width).style("stroke", "rgb(" + (255 - clr).toString() + ", " + clr.toString() + ", 20)").style("stroke-width", .5);
+						$("#WA_Edges").append("<option>" + str_a + " " + str_b + "</option>");
+						svg.append("svg:line").attr("y1", SVG_HEIGHT - (v_lat[a] - min_lat) / h * SVG_HEIGHT).attr("y2", SVG_HEIGHT - (v_lat[b] - min_lat) / h * SVG_HEIGHT).attr("x1", (v_lon[a] - min_lon) / w * SVG_WIDTH).attr("x2", (v_lon[b] - min_lon) / w * SVG_WIDTH).style("stroke", "rgb(" + (255 - clr).toString() + ", " + clr.toString() + ", 20)").style("stroke-width", .5);
 					}
+					point = svg.append("svg:circle").attr("cx", 0).attr("cy", 0).attr("r", 1).style("fill", "steelblue");
+					line = svg.append("svg:line").attr("y1", 0).attr("y2", 1).attr("x1", 0).attr("x2", 0).style("stroke", "steelblue").style("stroke-width", 10).style("opacity", .9);
 					$("#loading").fadeOut(100);
 					$("#demo").fadeIn(100);
+				});
+				$("#WA_Vertices").change(function(){
+					var id = $(this).val().match(/^[\d]+/);
+					var cx = Math.round((v_lon[id] - min_lon) / w * SVG_WIDTH);  
+					var cy = Math.round(SVG_HEIGHT - (v_lat[id] - min_lat) / h * SVG_HEIGHT); 
+					point.attr("cx", cx).attr("cy", cy).attr("r", 4).style("fill-opacity", 0).style("stroke", "steelblue").style("stroke-width", 2);
+					for (var i = 0; i < 8; ++i){
+						point.transition().duration(1000).attr("r", 48).style("stroke-width", 24);
+						point.transition().duration(1000).attr("r", 3).style("fill", "steeleblue").style("stroke-width", .5).style("fill-opacity", .64);
+					}
+				});
+				$("#WA_Edges").change(function(){
+					var a = $(this).val().match(/^[\d]+/);
+					var b = $(this).val().match(/[\d]+$/);
+					var ax = Math.round((v_lon[a] - min_lon) / w * SVG_WIDTH); 
+					var ay = Math.round(SVG_HEIGHT - (v_lat[a] - min_lat) / h * SVG_HEIGHT); 
+					var bx = Math.round((v_lon[b] - min_lon) / w * SVG_WIDTH); 
+					var by = Math.round(SVG_HEIGHT - (v_lat[b] - min_lat) / h * SVG_HEIGHT); 
+					//alert(ax + ", " + ay + ", " + bx + ", " + by);  
+
+					line.attr("y1", ay).attr("y2", by).attr("x1", ax).attr("x2", bx).style("stroke", "yellow").style("stroke-width", 10);
+				});
+				$("#WA_Edges").change(function(){
 				});
 			});
 		</script>
@@ -88,12 +114,16 @@
 						<select id="WA_Edges" size="30"></select>
 					</td>
 					<td align="top">
-						<div id="viz"></div>
+						<div id="svg">
+							<img id="point" src="point.png" style="display:none;"></img>
+							<img id="edge_a" src="edge_a.png" style="display:none;"></img>
+							<img id="edge_b" src="edge_b.png" style="display:none;"></img>
+						</div>
 					</td>
 				</tr>
 			</table>
 		</div>
-		<div id="WA_Vertices_data" style="display:none;"></div>
-		<div id="WA_Edges_data" style="display:none"></div>
+		<div id="WA_Vertices_data" style="position:relative; display:none;"></div>
+		<div id="WA_Edges_data" style="position:relative; display:none"></div>
 	</body>
 </html>
