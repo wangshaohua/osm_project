@@ -4,6 +4,18 @@
 		<title>Visualization of Edges and Vertices (Powered by d3.js)  -- Author: Yitao Li</title>
 		<script src="js/d3.v2.js"></script>
 		<script src="js/jquery-1.8.2.min.js"></script>
+		<script>
+			var MAP_POS, X_OFFSET, Y_OFFSET, map;	
+			$(document).ready(function(){
+				map = d3.select("#map").append("svg:svg").attr("width", "100%").attr("height", "100%");
+				MAP_POS = $("#map").position();
+				X_OFFSET = MAP_POS.left;
+				Y_OFFSET = MAP_POS.top;
+				$("#map").click(function(event){
+					map.append("svg:circle").attr("cx", event.pageX - X_OFFSET).attr("cy", event.pageY - Y_OFFSET).attr("r", 5).style("fill", "blue");
+				});
+			});
+		</script>
 	</head> 
 	<body>   
 		<div id="demo"> 
