@@ -5,14 +5,30 @@
 		<script src="js/d3.v2.js"></script>
 		<script src="js/jquery-1.8.2.min.js"></script>
 		<script>
-			var MAP_POS, X_OFFSET, Y_OFFSET, map;	
+			var MAP_POS, X_OFFSET, Y_OFFSET, map, prev_X = null, prev_Y = null, X, Y;	
 			$(document).ready(function(){
 				map = d3.select("#map").append("svg:svg").attr("width", "100%").attr("height", "100%");
 				MAP_POS = $("#map").position();
 				X_OFFSET = MAP_POS.left;
 				Y_OFFSET = MAP_POS.top;
+				$(document).bind("contextmenu",function(e){
+					return false;
+				}); 
 				$("#map").click(function(event){
-					map.append("svg:circle").attr("cx", event.pageX - X_OFFSET).attr("cy", event.pageY - Y_OFFSET).attr("r", 5).style("fill", "blue");
+					X = event.pageX - X_OFFSET;
+					Y = event.pageY - Y_OFFSET
+					map.append("svg:circle").attr("cx", X).attr("cy", Y).attr("r", 4).style("fill", "red");
+					if (prev_X != null && prev_Y != null){
+						map.append("svg:line").attr("x1", prev_X).attr("y1", prev_Y).attr("x2", X).attr("y2", Y).style("stroke", "blue").style("stroke-width", 2);  
+					}
+					prev_X = X;
+					prev_Y = Y;
+				});
+				$("#map").mousedown(function(event){
+					if (event.which == 3){
+						prev_X = null;
+						prev_Y = null;
+					}
 				});
 			});
 		</script>
