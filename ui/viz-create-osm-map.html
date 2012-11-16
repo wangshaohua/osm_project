@@ -60,7 +60,6 @@
 					}
 				});
 				$("#submit").click(function(){
-					/* todo: ajax */
 					if (prev_X != null || prev_Y != null){
 						prev_X = null;
 						prev_Y = null;
@@ -75,7 +74,6 @@
 							arg: '\'<?xml version="1.0" encoding="UTF-8"?>' + '<osm >' + node_xml + way_xml + '</osm>\''
 						},
 						success : function(data){
-							alert(data);
 							$("#result").html(data);
 						},
 						error : function(XMLHttpRequest, textStatus, errorThrown){}

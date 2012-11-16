@@ -440,18 +440,9 @@ int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
 }
 
 int osm_parse_result::print_edge_result(const char delim) const{
-	size_t e_id = 0, bp, ep;
-	double speed, ec;
 	std::cout<<"<div id=\"edge_result\">\n";
-	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
-		bp = iter -> second.first;
-		ep = iter -> second.second;
-		speed = get_edge_speed(iter -> first);
-		ec = (get_edge_distance_mi(bp, ep) * 3600.0 / get_edge_speed(iter -> first));    //estimated time cost
-		std::cout<<e_id<<delim<<bp<<delim<<ep<<delim<<ec<<'\n';
-		if (o_w.find(iter -> first) == o_w.end()){
-			std::cout<<++e_id<<delim<<ep<<delim<<bp<<delim<<ec<<'\n';
-		}
+	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++iter){
+		std::cout<<iter -> second.first<<delim<<iter -> second.second<<'\n';
 	}
 	std::cout<<"</div>\n";
 	return 0;
