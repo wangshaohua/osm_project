@@ -17,6 +17,7 @@ osm_parse_result::osm_parse_result(const char *input, bool online){
 		read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, input, strlen(input), fp);
 		//write_node_file("/tmp/node_xml");
 		print_vertex_result();
+		std::cout<<";";
 		print_edge_result();
 	}else{
 		std::ifstream f(input, std::ios_base::in);
@@ -408,12 +409,10 @@ int osm_parse_result::write_vertex_file(const char *fn, const char delim) const{
 
 int osm_parse_result::print_vertex_result(const char delim) const{
 	std::map< size_t, std::pair<double, double> >::const_iterator c_v; 
-	std::cout<<"<div id=\"vertex_result\">\n";
 	for (std::set< size_t >::const_iterator iter = v.begin(); iter != v.end(); ++iter){
 		c_v = n.find(*iter);
-		std::cout<<*iter<<delim<<c_v -> second.first<<delim<<c_v -> second.second<<'\n';
+		std::cout<<*iter<<delim<<c_v -> second.first<<delim<<c_v -> second.second<<delim;
 	}
-	std::cout<<"</div>\n";
 	return 0;
 }
 
@@ -440,11 +439,9 @@ int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
 }
 
 int osm_parse_result::print_edge_result(const char delim) const{
-	std::cout<<"<div id=\"edge_result\">\n";
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++iter){
-		std::cout<<iter -> second.first<<delim<<iter -> second.second<<'\n';
+		std::cout<<iter -> second.first<<delim<<iter -> second.second<<delim;
 	}
-	std::cout<<"</div>\n";
 	return 0;
 }
 

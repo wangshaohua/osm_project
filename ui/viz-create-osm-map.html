@@ -5,14 +5,18 @@
 		<script src="js/d3.v2.js"></script>
 		<script src="js/jquery-1.8.2.min.js"></script>
 		<script>
-			var MAP_POS, MAP_WIDTH, MAP_HEIGHT, X_OFFSET, Y_OFFSET, map, prev_X = null, prev_Y = null, X, Y, lat, lon, node_num = 0, _node_num, way_num = -1, node_exists = false, node_xml = "", way_xml = "";	
+			var MAP_POS, MAP_WIDTH, MAP_HEIGHT, X_OFFSET, Y_OFFSET, RES_POS, RES_X_OFFSET, RES_Y_OFFSET, map, graph, prev_X = null, prev_Y = null, X, Y, lat, lon, node_num = 0, _node_num, way_num = -1, node_exists = false, node_xml = "", way_xml = "", node = [];	
 			$(document).ready(function(){
 				map = d3.select("#map").append("svg:svg").attr("width", "100%").attr("height", "100%");
+				graph = d3.select("#graph").append("svg:svg").attr("width", "100%").attr("height", "100%");
 				MAP_POS = $("#map").position();
 				MAP_WIDTH = $("#map").width();
 				MAP_HEIGHT = $("#map").height();
 				X_OFFSET = MAP_POS.left;
 				Y_OFFSET = MAP_POS.top;
+				RES_POS = $("#graph").position();
+				RES_X_OFFSET = RES_POS.left;
+				RES_Y_OFFSET = RES_POS.top;
 				$(document).bind("contextmenu",function(e){
 					return false;
 				}); 
@@ -20,6 +24,7 @@
 					if (!node_exists){   //create a new node
 						X = event.pageX - X_OFFSET;
 						Y = event.pageY - Y_OFFSET;
+						node.push([X, Y]);
 						lat = Math.round((-Y * 180.0 / MAP_HEIGHT + 90.0) * 1000000) / 1000000.0;
 						lon = Math.round((X * 180.0 / MAP_WIDTH - 90.0) * 1000000) / 1000000.0;
 						map.append("svg:circle").data([ {node_num: node_num, lat: lat, lon: lon} ]).attr("cx", X).attr("cy", Y).attr("r", 6).style("fill", "red").style("cursor", "pointer").on("click", function(d,i){
@@ -53,14 +58,16 @@
 				});
 				$("#map").mousedown(function(event){
 					if (event.which == 3){
-						prev_X = null;
-						prev_Y = null;
-						$("#way-xml").append("\n&lt/way&gt;\n");
-						way_xml += "</way>";
+						if (prev_X != null && prev_Y != null){
+							prev_X = null;
+							prev_Y = null;
+							$("#way-xml").append("\n&lt/way&gt;\n");
+							way_xml += "</way>";
+						}
 					}
 				});
 				$("#submit").click(function(){
-					if (prev_X != null || prev_Y != null){
+					if (prev_X != null && prev_Y != null){
 						prev_X = null;
 						prev_Y = null;
 						$("#way-xml").append("\n&lt/way&gt;\n");
@@ -74,7 +81,28 @@
 							arg: '\'<?xml version="1.0" encoding="UTF-8"?>' + '<osm >' + node_xml + way_xml + '</osm>\''
 						},
 						success : function(data){
-							$("#result").html(data);
+							var result = data.split(';');
+							var vertex_result = result[0].split(' ');
+							var edge_result = result[1].split(' ');
+							var a, b;
+							$("#vertex-xml").html("");
+							$("#edge-xml").html("");
+							for (var i = 0; i < vertex_result.length - 1;){
+								str = "&lt;node id=\"" + vertex_result[i];
+								++i;
+								str += "\" lat=\"" + vertex_result[i];
+								++i;
+								str += "\" lon=\"" + vertex_result[i] + "/&gt;\n";
+								++i;
+								$("#vertex-xml").html($("#vertex-xml").html() + str);
+							}
+							for (var i = 0; i < edge_result.length - 1;){
+								a = edge_result[i]; ++i; b = edge_result[i]; ++i;
+								$("#edge-xml").html($("#edge-xml").html() + "(" + a + ", " + b + ")\n");
+								graph.append("svg:circle").attr("cx", node[a][0]).attr("cy", node[a][1]).attr("r", 6).style("fill", "#FF00FF");
+								graph.append("svg:circle").attr("cx", node[b][0]).attr("cy", node[b][1]).attr("r", 6).style("fill", "#FF00FF");
+								graph.append("svg:line").attr("x1", node[a][0]).attr("y1", node[a][1]).attr("x2", node[b][0]).attr("y2", node[b][1]).style("stroke", "green").style("stroke-width", 4); 
+							}
 						},
 						error : function(XMLHttpRequest, textStatus, errorThrown){}
 					});
@@ -141,8 +169,6 @@
 					</td>
 				</td>
 			</table>
-		</div>
-		<div id="result" style="display:none">
 		</div>
 	</body>
 </html>
