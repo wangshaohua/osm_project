@@ -16,5 +16,6 @@ char *circ_strncpy(char *, char *, const size_t, const size_t, const size_t, con
 char *circ_substr(char *, const char *, const size_t, const size_t, const size_t, const size_t);
 size_t circ_len(const size_t, const size_t, const size_t, const size_t);
 size_t update_buffer(char *, const size_t, const size_t, size_t &, std::ifstream &);
+size_t update_buffer(char *, const size_t, const size_t, size_t &, const char *, const size_t, size_t &);
 
 #endif

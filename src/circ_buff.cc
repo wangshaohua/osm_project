@@ -85,3 +85,20 @@ size_t update_buffer(char *buffer, const size_t buffer_size, const size_t curren
 	}
 	return offset = (current_pos + 1) % buffer_size;
 }
+
+size_t update_buffer(char *buffer, const size_t buffer_size, const size_t current_pos, size_t & offset, const char *f, const size_t f_size, size_t &fp){
+	if (fp < f_size){
+		if (current_pos < offset){
+			strncpy(buffer + offset, f, buffer_size - offset);
+			fp += buffer_size - offset;
+			strncpy(buffer, f, current_pos + 1);
+			fp += current_pos + 1;
+		}else{
+			strncpy(buffer + offset, f, current_pos - offset + 1);
+			fp += current_pos - offset + 1;
+		}
+	}else{
+		buffer[offset] = -1;
+	}
+	return offset = (current_pos + 1) % buffer_size;
+}

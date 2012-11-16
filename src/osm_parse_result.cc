@@ -105,6 +105,74 @@ void osm_parse_result::read_osm_xml_elem(char *buffer, const size_t buffer_size,
 	insert_end_pts();
 }
 
+/* same as above, except for the input is passed in as a long string (possibly from a php script): this is for testing purpose only */
+void osm_parse_result::read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t &offset, const char *f, const size_t f_size, size_t &fp){ 
+	char c[2], attr[MAX_TL], *s, *e, *attr_n;
+	size_t n_id, w_id = 0;
+	double lon, lat; 
+	do{
+		while (!(s = circ_str_chr(buffer, buffer_size, offset, '<'))){
+			offset = 0;
+			strncpy(buffer, f, buffer_size);
+			fp += buffer_size;
+		}
+		while (s){
+			update_buffer(buffer, buffer_size, s - buffer, offset, f, f_size, fp);
+			circ_strncpy(c, buffer, buffer_size, offset, 0, 1);	
+			if (c[0] != '/'){
+				if (!(e = circ_str_chr(buffer, buffer_size, offset, ' ')) || circ_len(buffer_size, offset, offset, e - buffer) > MAX_TL){
+					std::cerr<<"Error: XML tag name contains too many characters"<<std::endl;
+					exit(-1);
+				}
+				circ_substr(tag_name, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+				if (!strcmp(tag_name, T_NODE)){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);  //node id
+					n_id = get_attr_val<size_t>(attr);
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);  //node lat
+					lat = get_attr_val<double>(attr);
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);  //node lon
+					lon = get_attr_val<double>(attr);
+					insert_node_ref(n_id, lat, lon);
+				}else if (!strcmp(tag_name, T_WAY)){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);  //way id
+					w_id = get_attr_val<size_t>(attr);
+				}else if (!strcmp(tag_name, T_ND)){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);  //nd ref id
+					n_id = get_attr_val<size_t>(attr);
+					insert_way_ref(n_id, w_id);
+				}else if(w_id && !strcmp(tag_name, T_ATTR)){
+					read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);
+					attr_n = get_attr_str(attr);
+					if (!strcmp(attr_n, T_NAME)){  
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);
+						insert_way_name(w_id, get_attr_str(attr));
+					}else if (!strcmp(attr_n, T_TYPE)){ 
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);
+						insert_way_type(w_id, get_attr_str(attr));
+					}else if (!strcmp(attr_n, T_ONEWAY)){ 
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);
+						if (!strcmp(get_attr_str(attr), T_YES)){
+							insert_oneway(w_id);
+						}
+					}else if (!strcmp(attr_n, T_MAXSPEED)){ 
+						read_osm_xml_attr(buffer, attr, buffer_size, s, e, offset, f, f_size, fp);
+						insert_maxspeed(w_id, get_attr_num<double>(attr));
+					}
+				}
+				update_buffer(buffer, buffer_size, e - buffer, offset, f, f_size, fp);
+			}
+			while (!(s = circ_str_chr(buffer, buffer_size, offset, '>'))){
+				offset = 0;
+				strncpy(buffer, f, buffer_size);
+				fp += buffer_size;
+			}
+			update_buffer(buffer, buffer_size, s - buffer, offset, f, f_size, fp);
+			s = circ_str_chr(buffer, buffer_size, offset, '<');
+		}
+	}while (fp < f_size);
+	insert_end_pts();
+}
+
 ssize_t osm_parse_result::find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *c_wv, const size_t index) const{   //find vertex in current way that is the immediate predecessor to the node at current index
 	size_t min = 0, max, c, c_i;		
 	if (c_wv -> empty() || (*c_wv)[0].first >= index){
@@ -397,6 +465,30 @@ int osm_parse_result::write_edge_geometry_file(const char *fn, const char delim)
 void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char *&s, char *&e, size_t & offset, std::ifstream & f){ 
 	char *es = NULL; 
 	update_buffer(buffer, buffer_size, e - buffer, offset, f);
+	s = e; 
+	e = circ_str_chr(buffer, buffer_size, offset, ' ');
+	es = circ_str_chr(buffer, buffer_size, offset, '/');
+	if (es){
+		if (!e || (es - buffer - offset + buffer_size) % buffer_size < (e - buffer - offset + buffer_size) % buffer_size){
+			e = es;
+		}
+	}
+	es = circ_str_chr(buffer, buffer_size, offset, '>');
+	if (es){
+		if (!e || (es - buffer - offset + buffer_size) % buffer_size < (e - buffer - offset + buffer_size) % buffer_size){
+			e = es;
+		}
+	}
+	if (!e || circ_len(buffer_size, offset, offset, e - buffer) > MAX_TL){
+		perror("Error: XML tag name contains too many characters\n");
+		exit(-1);
+	}
+	circ_substr(attr, buffer, buffer_size, offset, offset, (e - buffer + buffer_size - 1) % buffer_size);	
+}
+
+void read_osm_xml_attr(char *buffer, char *attr, const size_t buffer_size, char *&s, char *&e, size_t & offset, const char *f, const size_t f_size, size_t &fp){  /* same as the above, except for input is a long string, not a file (note: this is for demo / testing purpose only)*/
+	char *es = NULL; 
+	update_buffer(buffer, buffer_size, e - buffer, offset, f, f_size, fp);
 	s = e; 
 	e = circ_str_chr(buffer, buffer_size, offset, ' ');
 	es = circ_str_chr(buffer, buffer_size, offset, '/');

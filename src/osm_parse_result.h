@@ -51,6 +51,7 @@ class osm_parse_result{
 		ssize_t find_immediate_predecessor(const std::vector< std::pair<size_t, size_t> > *, const size_t) const;
 		ssize_t find_immediate_successor(const std::vector< std::pair<size_t, size_t> > *, const size_t) const;
 		void read_osm_xml_elem(char *, const size_t, char *, size_t &, std::ifstream &);
+		void read_osm_xml_elem(char *, const size_t, char *, size_t &, const char *, const size_t, size_t &); //note: for testing purpose only
 		double determine_unknown_speed(const size_t) const;
 	public:
 		osm_parse_result(const char *);
@@ -82,6 +83,7 @@ class osm_parse_result{
 char *get_attr_str(char *);
 char *get_attr_num(char *);
 void read_osm_xml_attr(char *, char *, const size_t, char *&, char *&, size_t &, std::ifstream &);
+void read_osm_xml_attr(char *, char *, const size_t, char *&, char *&, size_t &, const char *, const size_t, size_t &);
 
 template <typename T> T get_attr_val(char *attr){   //this is assuming all attributes are delimited by double quotes
 	char *s = strchr(attr, '"');
