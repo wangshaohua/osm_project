@@ -5,7 +5,7 @@
 		<script src="js/d3.v2.js"></script>
 		<script src="js/jquery-1.8.2.min.js"></script>
 		<script>
-			var MAP_POS, MAP_WIDTH, MAP_HEIGHT, X_OFFSET, Y_OFFSET, map, prev_X = null, prev_Y = null, X, Y, lat, lon, node_num = 0, _node_num, way_num = -1, node_exists = false;	
+			var MAP_POS, MAP_WIDTH, MAP_HEIGHT, X_OFFSET, Y_OFFSET, map, prev_X = null, prev_Y = null, X, Y, lat, lon, node_num = 0, _node_num, way_num = -1, node_exists = false, node_xml = "", way_xml = "";	
 			$(document).ready(function(){
 				map = d3.select("#map").append("svg:svg").attr("width", "100%").attr("height", "100%");
 				MAP_POS = $("#map").position();
@@ -32,6 +32,7 @@
 						});
 						_node_num = node_num
 						$("#node-xml").append("&lt;node id=\"" + node_num + "\" lat=\"" + lat + "\" lon=\"" + lon  + "\"/&gt;\n");
+						node_xml += "<node id=\"" + node_num + "\" lat=\"" + lat + "\" lon=\"" + lon  + "\"/>\n";
 						++node_num;
 					}else{
 						node_exists = false;  //use an existing node
@@ -39,11 +40,14 @@
 					if (prev_X != null && prev_Y != null){
 						map.append("svg:line").attr("x1", prev_X).attr("y1", prev_Y).attr("x2", X).attr("y2", Y).style("stroke", "blue").style("stroke-width", 4); 
 						$("#way-xml").append("\n  ");
+						way_xml += "\n";
 					}else{
 						++way_num;
-						$("#way-xml").append("&lt;way id=\"" + way_num + "\"&gt;\n  ");
+						$("#way-xml").append("&lt;way id=\"" + way_num + "\" &gt;\n  ");
+						way_xml += "<way id=\"" + way_num + "\" >\n  ";
 					}
-					$("#way-xml").append("&lt;nd ref=\"" + _node_num + "\"/&gt;")
+					$("#way-xml").append("&lt;nd ref=\"" + _node_num + "\"/&gt;");
+					way_xml += "<nd ref=\"" + _node_num + "\"/>";
 					prev_X = X;
 					prev_Y = Y;
 				});
@@ -51,8 +55,31 @@
 					if (event.which == 3){
 						prev_X = null;
 						prev_Y = null;
-						$("#way-xml").append("\n&lt/way&gt;\n")
+						$("#way-xml").append("\n&lt/way&gt;\n");
+						way_xml += "</way>";
 					}
+				});
+				$("#submit").click(function(){
+					/* todo: ajax */
+					if (prev_X != null || prev_Y != null){
+						prev_X = null;
+						prev_Y = null;
+						$("#way-xml").append("\n&lt/way&gt;\n");
+						way_xml += "</way>";
+					}
+					$.ajax({
+						type : 'POST',
+						url : 'run_osm_parser.php',
+						dataType : 'html',
+						data: {
+							arg: '\'<?xml version="1.0" encoding="UTF-8"?>' + '<osm >' + node_xml + way_xml + '</osm>\''
+						},
+						success : function(data){
+							alert(data);
+							$("#result").html(data);
+						},
+						error : function(XMLHttpRequest, textStatus, errorThrown){}
+					});
 				});
 			});
 		</script>
@@ -110,7 +137,14 @@
 						</table>
 					</td>
 				</tr>
+				<tr>
+					<td>
+						<input id="submit" type="submit" value="Get Vertex-and-Edge Result"></input>
+					</td>
+				</td>
 			</table>
+		</div>
+		<div id="result" style="display:none">
 		</div>
 	</body>
 </html>

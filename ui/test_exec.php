@@ -1,3 +1,3 @@
 <?php
-	echo exec('./test_exec hello,\ world');
+	echo exec('../bin/test_exec "hello, world"');
 ?>

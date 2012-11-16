@@ -7,37 +7,44 @@
 #include "osm_parse_result.h"
 #include "alt_cost.h"
 
-osm_parse_result::osm_parse_result(const char *fn){
+osm_parse_result::osm_parse_result(const char *input, bool online){
 	char buffer[DEFAULT_BUFFER_SIZE + 1];
 	char tag_name[MAX_TL + 1];
-	size_t offset = 0;
+	size_t offset = 0, fp = 0;
 	buffer[DEFAULT_BUFFER_SIZE] = '\0';
 	tag_name[MAX_TL] = '\0';
-	std::ifstream f(fn, std::ios_base::in);
-	if (!f.is_open()){
-		std::cerr<<"Error opening "<<fn<<" for reading"<<std::endl;
-		exit(1);
+	if (online){
+		read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, input, strlen(input), fp);
+		//write_node_file("/tmp/node_xml");
+		print_vertex_result();
+		print_edge_result();
+	}else{
+		std::ifstream f(input, std::ios_base::in);
+		if (!f.is_open()){
+			std::cerr<<"Error opening "<<input<<" for reading"<<std::endl;
+			exit(1);
+		}
+		f.read(buffer, DEFAULT_BUFFER_SIZE);
+		read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f);
+		std::cout<<"# of vert(ices): "<<get_vertex_set().size()<<'\n';
+		std::cout<<"# of edge(s): "<<get_edge_set().size()<<'\n';
+		/*
+		std::cout<<"vert(ices):\n";
+		for (std::set<size_t>::iterator v_iter = get_vertex_set().begin(); v_iter != get_vertex_set().end(); ++v_iter){
+		std::cout<<*v_iter<<", ";
+		}
+		std::cout<<"\nedge(s):\n";
+		for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::iterator e_iter = get_edge_set().begin(); e_iter != get_edge_set().end(); ++e_iter){
+		std::cout<<"< "<<e_iter -> first<<", ("<<e_iter -> second.first<<", "<<e_iter -> second.second<<") >, ";
+		}
+		#std::cout<<'\n';
+		*/
+		write_node_file("/tmp/WA_Nodes.txt");
+		write_vertex_file("/tmp/WA_Vertices.txt");
+		write_edge_file("/tmp/WA_Edges.txt");
+		write_edge_geometry_file("/tmp/WA_EdgeGeometry.txt");
+		f.close();
 	}
-	f.read(buffer, DEFAULT_BUFFER_SIZE);
-	read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, f);
-std::cout<<"# of vert(ices): "<<get_vertex_set().size()<<'\n';
-std::cout<<"# of edge(s): "<<get_edge_set().size()<<'\n';
-/*
-std::cout<<"vert(ices):\n";
-for (std::set<size_t>::iterator v_iter = get_vertex_set().begin(); v_iter != get_vertex_set().end(); ++v_iter){
-std::cout<<*v_iter<<", ";
-}
-std::cout<<"\nedge(s):\n";
-for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::iterator e_iter = get_edge_set().begin(); e_iter != get_edge_set().end(); ++e_iter){
-std::cout<<"< "<<e_iter -> first<<", ("<<e_iter -> second.first<<", "<<e_iter -> second.second<<") >, ";
-}
-#std::cout<<'\n';
-*/
-write_node_file("/tmp/WA_Nodes.txt");
-write_vertex_file("/tmp/WA_Vertices.txt");
-write_edge_file("/tmp/WA_Edges.txt");
-write_edge_geometry_file("/tmp/WA_EdgeGeometry.txt");
-	f.close();
 }
 
 void osm_parse_result::read_osm_xml_elem(char *buffer, const size_t buffer_size, char *tag_name, size_t &offset, std::ifstream &f){ 
@@ -399,6 +406,17 @@ int osm_parse_result::write_vertex_file(const char *fn, const char delim) const{
 	return 0;
 }
 
+int osm_parse_result::print_vertex_result(const char delim) const{
+	std::map< size_t, std::pair<double, double> >::const_iterator c_v; 
+	std::cout<<"<div id=\"vertex_result\">\n";
+	for (std::set< size_t >::const_iterator iter = v.begin(); iter != v.end(); ++iter){
+		c_v = n.find(*iter);
+		std::cout<<*iter<<delim<<c_v -> second.first<<delim<<c_v -> second.second<<'\n';
+	}
+	std::cout<<"</div>\n";
+	return 0;
+}
+
 int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
 	size_t e_id = 0, bp, ep;
 	double speed, ec;
@@ -407,7 +425,6 @@ int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
 		std::cerr<<"Error opening "<<fn<<" for writing"<<std::endl;
 		return -1;
 	}
-	
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
 		bp = iter -> second.first;
 		ep = iter -> second.second;
@@ -419,6 +436,24 @@ int osm_parse_result::write_edge_file(const char *fn, const char delim) const{
 		}
 	}
 	f.close();
+	return 0;
+}
+
+int osm_parse_result::print_edge_result(const char delim) const{
+	size_t e_id = 0, bp, ep;
+	double speed, ec;
+	std::cout<<"<div id=\"edge_result\">\n";
+	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end(); ++e_id, ++iter){
+		bp = iter -> second.first;
+		ep = iter -> second.second;
+		speed = get_edge_speed(iter -> first);
+		ec = (get_edge_distance_mi(bp, ep) * 3600.0 / get_edge_speed(iter -> first));    //estimated time cost
+		std::cout<<e_id<<delim<<bp<<delim<<ep<<delim<<ec<<'\n';
+		if (o_w.find(iter -> first) == o_w.end()){
+			std::cout<<++e_id<<delim<<ep<<delim<<bp<<delim<<ec<<'\n';
+		}
+	}
+	std::cout<<"</div>\n";
 	return 0;
 }
 

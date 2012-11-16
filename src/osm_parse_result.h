@@ -54,7 +54,7 @@ class osm_parse_result{
 		void read_osm_xml_elem(char *, const size_t, char *, size_t &, const char *, const size_t, size_t &); //note: for testing purpose only
 		double determine_unknown_speed(const size_t) const;
 	public:
-		osm_parse_result(const char *);
+		osm_parse_result(const char *, bool = false);
 		~osm_parse_result(void){};
 		void insert_node_ref(const size_t, const double, const double);  //inserting into n_map 	
 		void insert_way_ref(const size_t, const size_t);    //inserting into w_map
@@ -76,7 +76,9 @@ class osm_parse_result{
 		}
 		int write_node_file(const char *, const char = DEFAULT_DELIM) const; 
 		int write_vertex_file(const char *, const char = DEFAULT_DELIM) const; 
+		int print_vertex_result(const char = DEFAULT_DELIM) const; 
 		int write_edge_file(const char *, const char = DEFAULT_DELIM) const; 
+		int print_edge_result(const char = DEFAULT_DELIM) const; 
 		int write_edge_geometry_file(const char *, const char = DEFAULT_GEOMETRY_DELIM) const; 
 };
 
