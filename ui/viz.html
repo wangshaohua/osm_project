@@ -12,8 +12,8 @@
 			var SVG_WIDTH = 1200, SVG_HEIGHT = 1200, max_lat = -90, min_lat = 90, max_lon = -180, min_lon = 180, w, h, point, line, v_lat = new Array(), v_lon = new Array(), v_edge = [];
 			function gmap_init(){
 				var mapOptions = {
-					center: new google.maps.LatLng(47.6007, -122.4298),
-					zoom: 13,
+					center: new google.maps.LatLng(min_lat + (max_lat - min_lat) / 2, min_lon + (max_lon - min_lon) / 2),
+					zoom: 12,
 					mapTypeId: google.maps.MapTypeId.ROADMAP
 				};
 				var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
@@ -132,6 +132,7 @@
 			<label style="width:240px; left:270px; top:12px; position:absolute;">Edge List (Vertex ID, Vertex ID)</label> 
 			<select style="width:200px; left:270px; top:50px; position:absolute;" id="WA_Edges" size="30"></select>
 			<label style="width:300px; left:500px; top:12px; position:absolute;">Vertex-and-Edge Representation</label>
+			<label style="width:300px; left:12px; top:480px; position:absolute;">OSM input file</label>
 			<form action="" style="left:12px; top:500px; position:absolute;">
 				<input type="file" name="osmfile">
 				<input type="submit" value="Generate">
