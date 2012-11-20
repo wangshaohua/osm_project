@@ -10,22 +10,22 @@
 				$("#loading").fadeIn(100);
 				$.ajax({
 					async: true,
-					url: "WA_Vertices.txt",
+					url: "NY-NJ_Vertices.txt",
 					beforeSend: function ( xhr ) {
 						xhr.overrideMimeType("text/plain; charset=utf-8");
 					}
 				}).done(function ( data ) {
-					$("#WA_Vertices_data").html(data);
+					$("#NY-NJ_Vertices_data").html(data);
 				});
 				$.ajax({
 					async: true,
-					url: "WA_Edges.txt",
+					url: "NY-NJ_Edges.txt",
 					beforeSend: function ( xhr ) {
 						xhr.overrideMimeType("text/plain; charset=utf-8");
 					}
 				}).done(function ( data ){
-					$("#WA_Edges_data").html(data);
-					var i, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, cost, clr, v_str = $("#WA_Vertices_data").html().split(/[ \n]+/), e_str = $("#WA_Edges_data").html().split(/[ \n]+/);
+					$("#NY-NJ_Edges_data").html(data);
+					var i, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, cost, clr, v_str = $("#NY-NJ_Vertices_data").html().split(/[ \n]+/), e_str = $("#NY-NJ_Edges_data").html().split(/[ \n]+/);
 					svg = d3.select("#svg").append("svg:svg").attr("width", SVG_WIDTH).attr("height", SVG_HEIGHT); 
 					for (i = 0; i < v_str.length - 1;){
 						str_id = v_str[i++]; str_lat = v_str[i++]; str_lon = v_str[i++];
@@ -41,7 +41,7 @@
 						}else if (lon > max_lon){
 							max_lon = lon;
 						}
-						$("#WA_Vertices").append("<option>" + str_id + ": (" + str_lat + ", " + str_lon + ")</option>");
+						$("#NY-NJ_Vertices").append("<option>" + str_id + ": (" + str_lat + ", " + str_lon + ")</option>");
 					}
 					h = max_lat - min_lat;
 					w = max_lon - min_lon;
@@ -59,7 +59,7 @@
 						}else{
 							clr = Math.floor(256 * (1 - Math.exp(-cost / 12.0)));
 						}
-						$("#WA_Edges").append("<option>" + str_a + " " + str_b + "</option>");
+						$("#NY-NJ_Edges").append("<option>" + str_a + " " + str_b + "</option>");
 						svg.append("svg:line").attr("y1", SVG_HEIGHT - (v_lat[a] - min_lat) / h * SVG_HEIGHT).attr("y2", SVG_HEIGHT - (v_lat[b] - min_lat) / h * SVG_HEIGHT).attr("x1", (v_lon[a] - min_lon) / w * SVG_WIDTH).attr("x2", (v_lon[b] - min_lon) / w * SVG_WIDTH).style("stroke", "rgb(" + (255 - clr).toString() + ", " + clr.toString() + ", 20)").style("stroke-width", .5);
 					}
 					point = svg.append("svg:circle").attr("cx", 0).attr("cy", 0).attr("r", 1).style("fill", "steelblue");
@@ -67,7 +67,7 @@
 					$("#loading").fadeOut(100);
 					$("#demo").fadeIn(100);
 				});
-				$("#WA_Vertices").change(function(){
+				$("#NY-NJ_Vertices").change(function(){
 					var id = $(this).val().match(/^[\d]+/);
 					var cx = Math.round((v_lon[id] - min_lon) / w * SVG_WIDTH);  
 					var cy = Math.round(SVG_HEIGHT - (v_lat[id] - min_lat) / h * SVG_HEIGHT); 
@@ -77,7 +77,7 @@
 						point.transition().duration(1000).attr("r", 3).style("fill", "steeleblue").style("stroke-width", .5).style("fill-opacity", .64);
 					}
 				});
-				$("#WA_Edges").change(function(){
+				$("#NY-NJ_Edges").change(function(){
 					var a = $(this).val().match(/^[\d]+/);
 					var b = $(this).val().match(/[\d]+$/);
 					var ax = Math.round((v_lon[a] - min_lon) / w * SVG_WIDTH); 
@@ -88,7 +88,7 @@
 
 					line.attr("y1", ay).attr("y2", by).attr("x1", ax).attr("x2", bx).style("stroke", "yellow").style("stroke-width", 10);
 				});
-				$("#WA_Edges").change(function(){
+				$("#NY-NJ_Edges").change(function(){
 				});
 			});
 		</script>
@@ -108,10 +108,10 @@
 				</tr>
 				<tr>
 					<td align="top">
-						<select id="WA_Vertices" size="30"></select>
+						<select id="NY-NJ_Vertices" size="30"></select>
 					</td>
 					<td align="top">
-						<select id="WA_Edges" size="30"></select>
+						<select id="NY-NJ_Edges" size="30"></select>
 					</td>
 					<td align="top">
 						<div id="svg">
@@ -120,7 +120,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="WA_Vertices_data" style="position:relative; display:none;"></div>
-		<div id="WA_Edges_data" style="position:relative; display:none"></div>
+		<div id="NY-NJ_Vertices_data" style="position:relative; display:none;"></div>
+		<div id="NY-NJ_Edges_data" style="position:relative; display:none"></div>
 	</body>
 </html>
