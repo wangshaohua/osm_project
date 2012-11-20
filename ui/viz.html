@@ -1,0 +1,145 @@
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8"> 
+<html>
+	<head>
+		<style>
+			demo { display: none; }
+		</style>	
+		<title>Visualization of Edges and Vertices (Powered by Google Maps API V3)  -- Author: Yitao Li</title>
+		<script src="js/d3.v2.js"></script>
+		<script src="js/jquery-1.8.2.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQskA8UaMD1vBFQxn6GAOf4Q3hEYwZuaU&sensor=false"></script>
+		<script>
+			var SVG_WIDTH = 1200, SVG_HEIGHT = 1200, max_lat = -90, min_lat = 90, max_lon = -180, min_lon = 180, w, h, point, line, v_lat = new Array(), v_lon = new Array(), v_edge = [];
+			function gmap_init(){
+				var mapOptions = {
+					center: new google.maps.LatLng(min_lat + (max_lat - min_lat) / 2, min_lon + (max_lon - min_lon) / 2),
+					zoom: 12,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				};
+				var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+				for (var i = 0; i < v_edge.length; ++i){
+					new google.maps.Polyline({
+						path: v_edge[i],
+						strokeColor:  '#0000FF',
+						strokeOpacity: .75,
+						strokeWeight: 1
+					}).setMap(map);
+				}
+			}
+			$(document).ready(function(){
+				$("#loading").fadeIn(100);
+				$.ajax({
+					async: true,
+					url: "WA_Vertices.txt",
+					beforeSend: function ( xhr ) {
+						xhr.overrideMimeType("text/plain; charset=utf-8");
+					}
+				}).done(function ( data ) {
+					$("#WA_Vertices_data").html(data);
+				});
+				$.ajax({
+					async: true,
+					url: "WA_Edges.txt",
+					beforeSend: function ( xhr ) {
+						xhr.overrideMimeType("text/plain; charset=utf-8");
+					}
+				}).done(function ( data ){
+					$("#WA_Edges_data").html(data);
+					var i, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, cost, clr, v_str = $("#WA_Vertices_data").html().split(/[ \n]+/), e_str = $("#WA_Edges_data").html().split(/[ \n]+/);
+					for (i = 0; i < v_str.length - 1;){
+						str_id = v_str[i++]; str_lat = v_str[i++]; str_lon = v_str[i++];
+						id = parseInt(str_id); lat = parseFloat(str_lat); lon = parseFloat(str_lon);
+						v_lat[id] = lat; v_lon[id] = lon;	
+						if (lat < min_lat){
+							min_lat = lat;
+						}else if (lat > max_lat){
+							max_lat = lat;
+						}
+						if (lon < min_lon){
+							min_lon = lon;
+						}else if (lon > max_lon){
+							max_lon = lon;
+						}
+						$("#WA_Vertices").append("<option>" + str_id + ": (" + str_lat + ", " + str_lon + ")</option>");
+					}
+					h = max_lat - min_lat;
+					w = max_lon - min_lon;   /* node: probably not necessary to compute h and w */
+					for (i = 1; i < e_str.length;){
+						str_a = e_str[i];
+						a = parseInt(str_a);   //skipping edge id
+						++i;
+						str_b = e_str[i];
+						b = parseInt(str_b);
+						++i;
+						cost = parseFloat(e_str[i]);
+						i += 2;
+						if (cost > 255.0){
+							clr = 255;
+						}else{
+							clr = Math.floor(256 * (1 - Math.exp(-cost / 12.0)));
+						}
+						$("#WA_Edges").append("<option>" + str_a + " " + str_b + "</option>");
+/*
+						svg.append("svg:line").attr("y1", SVG_HEIGHT - (v_lat[a] - min_lat) / h * SVG_HEIGHT).attr("y2", SVG_HEIGHT - (v_lat[b] - min_lat) / h * SVG_HEIGHT).attr("x1", (v_lon[a] - min_lon) / w * SVG_WIDTH).attr("x2", (v_lon[b] - min_lon) / w * SVG_WIDTH).style("stroke", "rgb(" + (255 - clr).toString() + ", " + clr.toString() + ", 20)").style("stroke-width", .5);
+*/
+						v_edge.push([new google.maps.LatLng(v_lat[a], v_lon[a]), new google.maps.LatLng(v_lat[b], v_lon[b])]);	
+					}
+/*
+					point = svg.append("svg:circle").attr("cx", 0).attr("cy", 0).attr("r", 1).style("fill", "steelblue");
+					line = svg.append("svg:line").attr("y1", 0).attr("y2", 1).attr("x1", 0).attr("x2", 0).style("stroke", "steelblue").style("stroke-width", 10).style("opacity", .9);
+*/
+					$("#loading").hide(0);
+					$("#demo").show(0);
+					gmap_init();
+				});
+				$("#WA_Vertices").change(function(){
+					var id = $(this).val().match(/^[\d]+/);
+					var cx = Math.round((v_lon[id] - min_lon) / w * SVG_WIDTH);  
+					var cy = Math.round(SVG_HEIGHT - (v_lat[id] - min_lat) / h * SVG_HEIGHT); 
+					point.attr("cx", cx).attr("cy", cy).attr("r", 4).style("fill-opacity", 0).style("stroke", "steelblue").style("stroke-width", 2);
+					for (var i = 0; i < 8; ++i){
+						point.transition().duration(1000).attr("r", 48).style("stroke-width", 24);
+						point.transition().duration(1000).attr("r", 3).style("fill", "steeleblue").style("stroke-width", .5).style("fill-opacity", .64);
+					}
+				});
+				$("#WA_Edges").change(function(){
+					var a = $(this).val().match(/^[\d]+/);
+					var b = $(this).val().match(/[\d]+$/);
+					var ax = Math.round((v_lon[a] - min_lon) / w * SVG_WIDTH); 
+					var ay = Math.round(SVG_HEIGHT - (v_lat[a] - min_lat) / h * SVG_HEIGHT); 
+					var bx = Math.round((v_lon[b] - min_lon) / w * SVG_WIDTH); 
+					var by = Math.round(SVG_HEIGHT - (v_lat[b] - min_lat) / h * SVG_HEIGHT); 
+					//alert(ax + ", " + ay + ", " + bx + ", " + by);  
+
+					line.attr("y1", ay).attr("y2", by).attr("x1", ax).attr("x2", bx).style("stroke", "yellow").style("stroke-width", 10);
+				});
+				/*
+				$("#WA_Edges").change(function(){
+				});
+				*/
+			});
+		</script>
+	</head> 
+	<body> 
+		<div id="loading" style="distplay:none;">
+			<table border="0" cellpadding="0" cellspacing="0" style="width: 800px; height: 600px; float: left; clear: left;">
+				<tr><td width="100%" height="100%" style=" background-image:url('loading.gif');background-repeat:no-repeat;background-size: 75%;"><font size="80" color="red">LOADING...</font></td></tr>
+			</table>
+		</div>
+		<div id="demo" style="display:none;">
+			<label class="demo" style="width:240px; left:12px; top:12px; position:absolute;">Vertex List (Vertex ID, Vertex Lat, Vertex Lon)</label> 
+			<select style="width:240px; left:12px; top:50px; position:absolute;" id="WA_Vertices" size="30"></select>
+			<label style="width:240px; left:270px; top:12px; position:absolute;">Edge List (Vertex ID, Vertex ID)</label> 
+			<select style="width:200px; left:270px; top:50px; position:absolute;" id="WA_Edges" size="30"></select>
+			<label style="width:300px; left:500px; top:12px; position:absolute;">Vertex-and-Edge Representation</label>
+			<label style="width:300px; left:12px; top:480px; position:absolute;">OSM input file</label>
+			<form enctype="multipart/form-data" method="post" action="run_osm_parser.php" style="left:12px; top:500px; position:absolute;">
+				<input type="file" name="osmfile" id="osmfile">
+				<input type="submit" name="submit" value="Generate">
+			</form>
+			<div style="width:600px; height:500px; left:500px; top:50px; position:absolute;" id="map_canvas"></div>
+		</div>
+		<div id="WA_Vertices_data" style="position:relative; display:none;"></div>
+		<div id="WA_Edges_data" style="position:relative; display:none"></div>
+	</body>
+</html>
