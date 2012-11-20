@@ -80,6 +80,7 @@ class osm_parse_result{
 		int write_edge_file(const char *, const char = DEFAULT_DELIM) const; 
 		int print_edge_result(const char = DEFAULT_DELIM) const; 
 		int write_edge_geometry_file(const char *, const char = DEFAULT_GEOMETRY_DELIM) const; 
+		int print_edge_geometry_result(const char = DEFAULT_GEOMETRY_DELIM) const; 
 };
 
 char *get_attr_str(char *);
