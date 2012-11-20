@@ -28,7 +28,7 @@
 				}
 				for (var i = 0; i < v_geometry.length; ++i){
 					new google.maps.Polyline({
-						path: v_edge[i],
+						path: v_geometry[i],
 						strokeColor: "#FF0000",  
 						strokeOpacity: .4,
 						strokeWeight: 4
@@ -63,7 +63,7 @@
 					}
 				}).done(function ( data ){
 					$("#NY-NJ_Edges_data").html(data);
-					var i, j, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, clr, v_str = $("#NY-NJ_Vertices_data").html().split(/[ \n]+/), e_str = $("#NY-NJ_Edges_data").html().split(/[ \n]+/), geometry_str = $("#NY-NJ_EdgeGeometry_data").html().split(/\r\n|\r|\n/);
+					var i, j, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, x1, y1, x2, y2, v_str = $("#NY-NJ_Vertices_data").html().split(/[ \n]+/), e_str = $("#NY-NJ_Edges_data").html().split(/[ \n]+/), geometry_str = $("#NY-NJ_EdgeGeometry_data").html().split(/\r\n|\r|\n/);
 					for (i = 0; i < v_str.length - 1;){
 						str_id = v_str[i++]; str_lat = v_str[i++]; str_lon = v_str[i++];
 						id = parseInt(str_id); lat = parseFloat(str_lat); lon = parseFloat(str_lon);
@@ -94,15 +94,16 @@
 						v_edge.push([new google.maps.LatLng(v_lat[a], v_lon[a]), new google.maps.LatLng(v_lat[b], v_lon[b])]);	
 					}
 					for (i = 0; i < geometry_str.length; ++i){
-						var polyline = geometry_str[i].split(/[\^\n]+/);
-						var pt = [];
-						for (j = 0; j < polyline.length;){	
-							y = parseFloat(polyline[j]);
-							x = parseFloat(polyline[j]);
-							pt[j] = new google.maps.LatLng(y1, x1);
-							j += 2;
+						var polyline = geometry_str[i].split(/[ \n]+/);
+						y1 = parseFloat(polyline[0]);
+						x1 = parseFloat(polyline[1]);
+						for (j = 2; j < polyline.length; j += 2){	
+							y2 = parseFloat(polyline[j]);
+							x2 = parseFloat(polyline[j + 1]);
+							v_geometry.push([new google.maps.LatLng(y1, x1), new google.maps.LatLng(y2, x2)]);	
+							y1 = y2;
+							x1 = x2;
 						}
-						v_geometry.push([pt]);	
 					}
 
 					$("#loading").hide(0);
