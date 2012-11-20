@@ -1,7 +1,7 @@
 /* 
  *  code for converting the XML parse result into a directed graph 
  *
- *  author:  Lim Kwan Kong & Yitao Li
+ *  authors:  Lim Kwan Kong & Yitao Li
  *
  */
 

@@ -4,7 +4,7 @@
 		<style>
 			demo { display: none; }
 		</style>	
-		<title>Visualization of Edges and Vertices (Powered by Google Maps API V3)  -- Author: Yitao Li</title>
+		<title>Visualization of Edges and Vertices (Powered by Google Maps API V3)  -- Authors: Lim Kwan Kong & Yitao Li</title>
 		<script src="js/d3.v2.js"></script>
 		<script src="js/jquery-1.8.2.min.js"></script>
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQskA8UaMD1vBFQxn6GAOf4Q3hEYwZuaU&sensor=false"></script>
@@ -127,19 +127,22 @@
 			</table>
 		</div>
 		<div id="demo" style="display:none;">
-			<label class="demo" style="width:240px; left:12px; top:12px; position:absolute;">Vertex List (Vertex ID, Vertex Lat, Vertex Lon)</label> 
-			<select style="width:240px; left:12px; top:50px; position:absolute;" id="WA_Vertices" size="30"></select>
-			<label style="width:240px; left:270px; top:12px; position:absolute;">Edge List (Vertex ID, Vertex ID)</label> 
-			<select style="width:200px; left:270px; top:50px; position:absolute;" id="WA_Edges" size="30"></select>
-			<label style="width:300px; left:500px; top:12px; position:absolute;">Vertex-and-Edge Representation</label>
+			<label class="demo" style="width:240px; left:12px; top:100px; position:absolute;">Vertex List (Vertex ID, Vertex Lat, Vertex Lon)</label> 
+			<select style="width:240px; left:12px; top:120px; position:absolute;" id="WA_Vertices" size="30"></select>
+			<label style="width:240px; left:270px; top:100px; position:absolute;">Edge List (Vertex ID, Vertex ID)</label> 
+			<select style="width:200px; left:270px; top:120px; position:absolute;" id="WA_Edges" size="30"></select>
+			<label style="width:300px; left:500px; top:100px; position:absolute;">Vertex-and-Edge Representation</label>
 			<label style="width:300px; left:12px; top:480px; position:absolute;">OSM input file</label>
-			<form enctype="multipart/form-data" method="post" action="run_osm_parser.php" style="left:12px; top:500px; position:absolute;">
-				<input type="file" name="osmfile" id="osmfile">
-				<input type="submit" name="submit" value="Generate">
-			</form>
-			<div style="width:600px; height:500px; left:500px; top:50px; position:absolute;" id="map_canvas"></div>
+			<fieldset style="border: 1px solid #cecece left:40px; top:12px; position:absolute;">
+				<legend>OSM File Upload</legend>
+				<form enctype="multipart/form-data" method="post" action="run_osm_parser.php">
+					<input type="file" name="osmfile" id="osmfile">
+					<input type="submit" name="submit" value="Generate">
+				</form>
+			</fieldset>
+			<div style="width:600px; height:500px; left:500px; top:120px; position:absolute;" id="map_canvas"></div>
 		</div>
-		<div id="WA_Vertices_data" style="position:relative; display:none;"></div>
-		<div id="WA_Edges_data" style="position:relative; display:none"></div>
+		<div id="WA_Vertices_data" style="display:none;"></div>
+		<div id="WA_Edges_data" style="display:none"></div>
 	</body>
 </html>
