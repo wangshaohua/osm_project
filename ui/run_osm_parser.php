@@ -32,9 +32,8 @@
 	// Move WA_* files to the web directory.
 	//echo shell_exec('sudo cp -v /tmp/WA_* .'); // for some reason this won't execute!
 	
-	echo substr($pwd, 0, -1)."/WA_Vertices.txt<br/>";
-	echo rename("/tmp/WA_Vertices.txt", substr($pwd, 0, -1) . "/WA_Vertices.txt") . "<br/>";
-	echo rename("/tmp/WA_Edges.txt", substr($pwd, 0, -1) . "/WA_Edges.txt") . "<br/>";
+	rename("/tmp/WA_Vertices.txt", substr($pwd, 0, -1) . "/WA_Vertices.txt") . "<br/>";
+	rename("/tmp/WA_Edges.txt", substr($pwd, 0, -1) . "/WA_Edges.txt") . "<br/>";
 	
 	echo "<br/><a href='viz.html'>Go back to visualize page</a>";
 	
