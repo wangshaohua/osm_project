@@ -133,9 +133,9 @@
 			<select style="width:200px; left:270px; top:50px; position:absolute;" id="WA_Edges" size="30"></select>
 			<label style="width:300px; left:500px; top:12px; position:absolute;">Vertex-and-Edge Representation</label>
 			<label style="width:300px; left:12px; top:480px; position:absolute;">OSM input file</label>
-			<form action="" style="left:12px; top:500px; position:absolute;">
-				<input type="file" name="osmfile">
-				<input type="submit" value="Generate">
+			<form enctype="multipart/form-data" method="post" action="run_osm_parser.php" style="left:12px; top:500px; position:absolute;">
+				<input type="file" name="osmfile" id="osmfile">
+				<input type="submit" name="submit" value="Generate">
 			</form>
 			<div style="width:600px; height:500px; left:500px; top:50px; position:absolute;" id="map_canvas"></div>
 		</div>

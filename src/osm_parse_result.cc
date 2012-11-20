@@ -40,10 +40,10 @@ osm_parse_result::osm_parse_result(const char *input, bool online){
 		}
 		#std::cout<<'\n';
 		*/
-		write_node_file("../ui/WA_Nodes.txt");
-		write_vertex_file("../ui/WA_Vertices.txt");
-		write_edge_file("../ui/WA_Edges.txt");
-		write_edge_geometry_file("../ui/WA_EdgeGeometry.txt");
+		write_node_file("/tmp/WA_Nodes.txt");
+		write_vertex_file("/tmp/WA_Vertices.txt");
+		write_edge_file("/tmp/WA_Edges.txt");
+		write_edge_geometry_file("/tmp/WA_EdgeGeometry.txt");
 		f.close();
 	}
 }
