@@ -6,11 +6,12 @@
 				function init(){
 					map = new OpenLayers.Map("mapdiv");
 					var ol = new OpenLayers.Layer.OSM();
-					var start_point = new OpenLayers.Geometry.Point(-73.92205, 41.75145);
-					var end_point = new OpenLayers.Geometry.Point(-74.92205, 40.75145);
+					var lineLayer = new OpenLayers.Layer.Vector("Line Layer"); 
+					var start_point = new OpenLayers.Geometry.Point(-72.91205, 40.86045);
+					var end_point = new OpenLayers.Geometry.Point(-74.92205, 40.65145);
 					var vector = new OpenLayers.Layer.Vector();
-					vector.addFeatures([new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString([start_point, end_point]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:4326")))]); //900913
-					map.addLayers([ol,vector]);
+					vector.addFeatures([new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString([start_point, end_point]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")), null, { strokeColor: '#0000ff', strokeOpacity: 0.5, strokeWidth: 5 })]);
+					map.addLayers([ol, lineLayer ,vector]);
 					map.setCenter(new OpenLayers.LonLat(-73.91205, 40.76045).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()), 12);
 				}
 			</script>
