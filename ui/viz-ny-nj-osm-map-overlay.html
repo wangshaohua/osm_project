@@ -1,0 +1,139 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<html>
+	<head>
+		<script src="js/OpenLayers.js"></script>
+		<script src="js/d3.v2.js"></script>
+		<script src="js/jquery-1.8.2.min.js"></script>
+		<script>
+			function init(){
+				var min_lat, max_lat, min_lon, max_lon, map = new OpenLayers.Map("mapdiv"), ol = new OpenLayers.Layer.OSM(), lineLayer = new OpenLayers.Layer.Vector("Line Layer"); 
+				/*
+				var start_point = new OpenLayers.Geometry.Point(-72.91205, 40.86045);
+				var end_point = new OpenLayers.Geometry.Point(-74.92205, 40.65145);
+
+				var start_point1 = new OpenLayers.Geometry.Point(-72.81205, 40.86045);
+				var end_point1 = new OpenLayers.Geometry.Point(-74.92205, 40.65145);
+				*/
+
+				var vector = new OpenLayers.Layer.Vector();
+				var v_lat = new Array(), v_lon = new Array(), v_edge = [];
+
+				$.ajax({
+					async: true,
+					url: "NY-NJ_Vertices.txt",
+					beforeSend: function ( xhr ) {
+						xhr.overrideMimeType("text/plain; charset=utf-8");
+					}
+				}).done(function ( data ) {
+					$("#NY-NJ_Vertices_data").html(data);
+				});
+				$.ajax({
+					async: true,
+					url: "NY-NJ_EdgeGeometry.txt",
+					beforeSend: function ( xhr ) {
+						xhr.overrideMimeType("text/plain; charset=utf-8");
+					}
+				}).done(function ( data ) {
+					$("#NY-NJ_EdgeGeometry_data").html(data);
+				});
+				$.ajax({
+					async: true,
+					url: "NY-NJ_Edges.txt",
+					beforeSend: function ( xhr ) {
+						xhr.overrideMimeType("text/plain; charset=utf-8");
+					}
+				}).done(function ( data ){
+					$("#NY-NJ_Edges_data").html(data);
+					var i, j, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, x1, y1, x2, y2, v_str = $("#NY-NJ_Vertices_data").html().split(/[ \n]+/), e_str = $("#NY-NJ_Edges_data").html().split(/[ \n]+/), geometry_str = $("#NY-NJ_EdgeGeometry_data").html().split(/\r\n|\r|\n/);
+					for (i = 0; i < v_str.length - 1;){
+						str_id = v_str[i++]; str_lat = v_str[i++]; str_lon = v_str[i++];
+						id = parseInt(str_id); lat = parseFloat(str_lat); lon = parseFloat(str_lon);
+						v_lat[id] = lat; v_lon[id] = lon;	
+						if (lat < min_lat){
+							min_lat = lat;
+						}else if (lat > max_lat){
+							max_lat = lat;
+						}
+						if (lon < min_lon){
+							min_lon = lon;
+						}else if (lon > max_lon){
+							max_lon = lon;
+						}
+						$("#NY-NJ_Vertices").append("<option>" + str_id + ": (" + str_lat + ", " + str_lon + ")</option>");
+					}
+					h = max_lat - min_lat;
+					w = max_lon - min_lon;   /* node: probably not necessary to compute h and w */
+
+					for (i = 1; i < e_str.length;){
+						str_a = e_str[i];
+						a = parseInt(str_a);   //skipping edge id
+						++i;
+						str_b = e_str[i];
+						b = parseInt(str_b);
+						++i;
+						i += 2;
+						$("#NY-NJ_Edges").append("<option>" + str_a + " " + str_b + "</option>");
+						v_edge.push(new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString([new OpenLayers.Geometry.Point(v_lon[a], v_lat[a]), new OpenLayers.Geometry.Point(v_lon[b], v_lat[b])]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")), null, { strokeColor: '#0000ff', strokeOpacity: 0.5, strokeWidth: 1 }));
+					}
+					/*
+					for (i = 0; i < geometry_str.length; ++i){
+						var polyline = geometry_str[i].split(/[ \n]+/);
+						y1 = parseFloat(polyline[0]);
+						x1 = parseFloat(polyline[1]);
+						for (j = 2; j < polyline.length; j += 2){	
+							y2 = parseFloat(polyline[j]);
+							x2 = parseFloat(polyline[j + 1]);
+							v_geometry.push([new google.maps.LatLng(y1, x1), new google.maps.LatLng(y2, x2)]);	
+							y1 = y2;
+							x1 = x2;
+						}
+					}
+					*/
+
+					vector.addFeatures(v_edge);
+					$("#loading").hide(0);
+					//$("#demo").show(0);
+				});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				//var line_style = 
+				/*
+				vector.addFeatures(
+				[new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString([start_point, end_point]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")), null, { strokeColor: '#0000ff', strokeOpacity: 0.5, strokeWidth: 5 }), 
+				new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString([start_point1, end_point1]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")), null, { strokeColor: '#ff0000', strokeOpacity: 0.5, strokeWidth: 5 }), 
+				]);
+				*/
+				map.addLayers([ol, lineLayer ,vector]);
+				map.setCenter(new OpenLayers.LonLat(-73.91205, 40.76045).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()), 12);
+
+			}
+
+		</script>
+	</head>
+
+	<body onload="init()">
+		<div id="loading" style="distplay:none;">
+			<table border="0" cellpadding="0" cellspacing="0" style="width: 800px; height: 600px; float: left; clear: left;">
+				<tr><td width="100%" height="100%" style=" background-image:url('loading.gif');background-repeat:no-repeat;background-size: 75%;"><font size="80" color="red">LOADING...</font></td></tr>
+			</table>
+		</div>
+		<div id="demo">
+			<div id="mapdiv"></div>
+		</div>
+		<div id="NY-NJ_Vertices_data" style="display:none;"></div>
+		<div id="NY-NJ_Edges_data" style="display:none"></div>
+		<div id="NY-NJ_EdgeGeometry_data" style="display:none"></div>
+	</body>
+</html>
