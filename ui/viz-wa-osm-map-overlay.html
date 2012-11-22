@@ -5,36 +5,38 @@
 		<script src="js/d3.v2.js"></script>
 		<script src="js/jquery-1.8.2.min.js"></script>
 		<script>
-			var min_lat = 90, max_lat = -90, min_lon = 180, max_lon = -180; 
+			var min_lat = 90, max_lat = -90, min_lon = 180, max_lon = -180;
 			function init(){
 				var map, ol = new OpenLayers.Layer.OSM(), vector = new OpenLayers.Layer.Vector(), v_lat = new Array(), v_lon = new Array(), v_edge = []; //lineLayer = new OpenLayers.Layer.Vector("Line Layer"); 
 				$.ajax({
 					async: true,
-					url: "NY-NJ_Vertices.txt",
+					url: "WA_Vertices.txt",
 					beforeSend: function ( xhr ) {
 						xhr.overrideMimeType("text/plain; charset=utf-8");
 					}
 				}).done(function ( data ) {
-					$("#NY-NJ_Vertices_data").html(data);
+					$("#WA_Vertices_data").html(data);
 				});
+				/*
 				$.ajax({
 					async: true,
-					url: "NY-NJ_EdgeGeometry.txt",
+					url: "WA_EdgeGeometry.txt",
 					beforeSend: function ( xhr ) {
 						xhr.overrideMimeType("text/plain; charset=utf-8");
 					}
 				}).done(function ( data ) {
-					$("#NY-NJ_EdgeGeometry_data").html(data);
+					$("#WA_EdgeGeometry_data").html(data);
 				});
+				*/
 				$.ajax({
 					async: true,
-					url: "NY-NJ_Edges.txt",
+					url: "WA_Edges.txt",
 					beforeSend: function ( xhr ) {
 						xhr.overrideMimeType("text/plain; charset=utf-8");
 					}
 				}).done(function ( data ){
-					$("#NY-NJ_Edges_data").html(data);
-					var i, j, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, x1, y1, x2, y2, v_str = $("#NY-NJ_Vertices_data").html().split(/[ \n]+/), e_str = $("#NY-NJ_Edges_data").html().split(/[ \n]+/), geometry_str = $("#NY-NJ_EdgeGeometry_data").html().split(/\r\n|\r|\n/);
+					$("#WA_Edges_data").html(data);
+					var i, j, str_id, str_lat, str_lon, id, lat, lon, str_a, str_b, a, b, x1, y1, x2, y2, v_str = $("#WA_Vertices_data").html().split(/[ \n]+/), e_str = $("#WA_Edges_data").html().split(/[ \n]+/)/*, geometry_str = $("#WA_EdgeGeometry_data").html().split(/\r\n|\r|\n/)*/;
 					for (i = 0; i < v_str.length - 1;){
 						str_id = v_str[i++]; str_lat = v_str[i++]; str_lon = v_str[i++];
 						id = parseInt(str_id); lat = parseFloat(str_lat); lon = parseFloat(str_lon);
@@ -49,7 +51,7 @@
 						}else if (lon > max_lon){
 							max_lon = lon;
 						}
-						$("#NY-NJ_Vertices").append("<option>" + str_id + ": (" + str_lat + ", " + str_lon + ")</option>");
+						$("#WA_Vertices").append("<option>" + str_id + ": (" + str_lat + ", " + str_lon + ")</option>");
 					}
 					h = max_lat - min_lat;
 					w = max_lon - min_lon;   /* node: probably not necessary to compute h and w */
@@ -61,9 +63,10 @@
 						b = parseInt(str_b);
 						++i;
 						i += 2;
-						$("#NY-NJ_Edges").append("<option>" + str_a + " " + str_b + "</option>");
+						$("#WA_Edges").append("<option>" + str_a + " " + str_b + "</option>");
 						v_edge.push(new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString([new OpenLayers.Geometry.Point(v_lon[a], v_lat[a]), new OpenLayers.Geometry.Point(v_lon[b], v_lat[b])]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")), null, { strokeColor: '#0000ff', strokeOpacity: 0.75, strokeWidth: 1 }));
 					}
+					/*
 					for (i = 0; i < geometry_str.length; ++i){
 						var polyline = geometry_str[i].split(/[ \n]+/);
 						y1 = parseFloat(polyline[0]);
@@ -76,6 +79,7 @@
 							x1 = x2;
 						}
 					}
+					*/
 					vector.addFeatures(v_edge);
 					$("#loading").hide(0);
 					$("#demo").show(0);
@@ -96,7 +100,7 @@
 						],
 						zoom: 12
 					});
-					map.setCenter(new OpenLayers.LonLat((min_lon + max_lon) / 2, (min_lat + max_lat) / 2).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()), 12);
+					map.setCenter(new OpenLayers.LonLat((max_lon + min_lon) / 2, (max_lat + min_lat) / 2).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()), 12);
 				});
 			}
 
@@ -112,8 +116,8 @@
 		<div id="demo">
 			<div id="map"></div>
 		</div>
-		<div id="NY-NJ_Vertices_data" style="display:none;"></div>
-		<div id="NY-NJ_Edges_data" style="display:none"></div>
-		<div id="NY-NJ_EdgeGeometry_data" style="display:none"></div>
+		<div id="WA_Vertices_data" style="display:none;"></div>
+		<div id="WA_Edges_data" style="display:none"></div>
+		<div id="WA_EdgeGeometry_data" style="display:none"></div>
 	</body>
 </html>
