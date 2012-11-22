@@ -7,7 +7,7 @@
 
 if [ $# -ne 4 ]
 then
-	echo "Usage: " $0 " <westernmost longtitude> <southernmost latitude> <easternmost longtituderight> <northernmost latitude>" 
+	echo "Usage: " $0 " <westernmost longtitude> <southernmost latitude> <easternmost longtitude> <northernmost latitude>" 
 	exit 0
 fi
 
