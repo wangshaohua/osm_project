@@ -17,7 +17,8 @@
 	}else{
 		echo '<h>Query Result:</h><br/>';
 		echo '<textarea readonly="readonly" rows=10 cols=40>' . file_get_contents($fn) . "</textarea><br/>";
-		echo '<a href=' . urlencode($fn) . '>Download Result</a><br/>';
+		echo '<a href="' . $fn . '">Download Result</a><br/>';
+		echo '<a href="generate_result.php?fn=' . $fn . '">Generate Vertex and Edge Representation</a>';
 	}
 	curl_close($c);
 ?>

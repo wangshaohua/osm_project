@@ -14,8 +14,9 @@ osm_parse_result::osm_parse_result(const char *input, bool online){
 	buffer[DEFAULT_BUFFER_SIZE] = '\0';
 	tag_name[MAX_TL] = '\0';
 	if (online){
+		std::cout<<"reading\n";
 		read_osm_xml_elem(buffer, DEFAULT_BUFFER_SIZE, tag_name, offset, input, strlen(input), fp);
-		//write_node_file("/tmp/node_xml");
+		std::cout<<"done\n";
 		print_vertex_result();
 		std::cout<<";";
 		print_edge_result();
@@ -40,10 +41,10 @@ osm_parse_result::osm_parse_result(const char *input, bool online){
 		}
 		#std::cout<<'\n';
 		*/
-		write_node_file("/tmp/WA_Nodes.txt");
-		write_vertex_file("/tmp/WA_Vertices.txt");
-		write_edge_file("/tmp/WA_Edges.txt");
-		write_edge_geometry_file("/tmp/WA_EdgeGeometry.txt");
+		write_node_file(std::string(input).append("_Nodes.txt").c_str());
+		write_vertex_file(std::string(input).append("_Vertices.txt").c_str());
+		write_edge_file(std::string(input).append("_Edges.txt").c_str());
+		write_edge_geometry_file(std::string("/tmp/").append(input).append("_EdgeGeometry.txt").c_str());
 		f.close();
 	}
 }
@@ -495,8 +496,8 @@ int osm_parse_result::print_edge_geometry_result(const char delim) const{
 	/*double e_l;
 	std::string c_n, c_t;
 	std::map<size_t, std::string>::const_iterator a_iter;
-	std::map< size_t, std::vector<size_t> >::const_iterator w_iter;
 	*/
+	std::map< size_t, std::vector<size_t> >::const_iterator w_iter;
 	std::map< size_t, std::pair<double, double> >::const_iterator n_iter;
 	for (std::set< std::pair< size_t, std::pair<size_t, size_t> > >::const_iterator iter = e.begin(); iter != e.end();/* ++e_id, */ ++iter){
 		/*
@@ -512,6 +513,7 @@ int osm_parse_result::print_edge_geometry_result(const char delim) const{
 			n_iter = n.find(w_iter -> second[i]);
 			std::cout<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
 		}
+		/*
 		std::cout<<'\n';
 		if (o_w.find(iter -> first) == o_w.end()){
 			//std::cout<<++e_id<<delim<<c_n<<delim<<c_t<<delim<<e_l;
@@ -520,9 +522,25 @@ int osm_parse_result::print_edge_geometry_result(const char delim) const{
 				std::cout<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
 			}
 			n_iter = n.find(w_iter -> second[s_i]);
-			std::cout<<delim<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
+			std::cout<<(n_iter -> second).first<<delim<<(n_iter -> second).second;
 		}
+		*/
 		std::cout<<'\n';
+	}
+	return 0;
+}
+
+int osm_parse_result::print_w(const char delim) const{
+	for (std::map< size_t, std::vector<size_t> >::const_iterator w_iter = w.begin(); w_iter != w.end(); ++w_iter){
+		std::vector<size_t>::const_iterator wv_iter = w_iter -> second.begin();
+		std::map< size_t, std::pair<double, double> >::const_iterator n_iter = n.find(*wv_iter);
+		std::cout<<(n_iter -> second.first)<<delim<<(n_iter -> second.second);
+		++wv_iter;
+		for (; wv_iter != w_iter -> second.end(); ++wv_iter){
+			n_iter = n.find(*wv_iter);
+			std::cout<<delim<<(n_iter -> second.first)<<delim<<(n_iter -> second.second);
+		}
+		std::cout<<"\n";
 	}
 	return 0;
 }
